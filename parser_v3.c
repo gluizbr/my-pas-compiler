@@ -53,8 +53,8 @@ void
 expr(void)
 {
     int oplus;
-    int otimes;
 _term:
+    int otimes;
 _fact:
     //fact
     switch (lookahead) {
@@ -64,11 +64,8 @@ _fact:
 		match(ASGN); expr();
 	}
         break;
-    case UINT:
-        match(UINT);
-        break;
-    case FLT:
-        match(FLT);
+    case DEC:
+        match(DEC);
         break;
     default:
         match('(');

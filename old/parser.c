@@ -27,36 +27,62 @@ int             gettoken(FILE *);
 /*
  * grammar emulation functions 
  */
-int isOPLUS(void) {
-    switch (lookahead) {
-    case '+':
-        return '+';
-    case '-':
-        return '-';
-    default:
-        return 0;
-    }
+void
+expr(void)
+{
+    term();
+    rest();
 }
 
-int isOTIMES(void){
+void
+rest(void)
+{
     switch (lookahead) {
-    case '*':
-        return '*';
-    case '/':
-        return '/';
-    default:
-        return 0;
+    case '+':
+    case '-':
+        match(lookahead);
+        term();
+        rest();
+        break;
+     case-1:case')':
+		break;
+     default:
+        fprintf(stderr,
+	"ilegal trailing symbol: '%c'\n", lookahead);
+	exit(-3);
     }
 }
 
 void
-expr(void)
+term(void)
 {
-    int oplus;
-    int otimes;
-_term:
-_fact:
-    //fact
+    fact();
+    quoc();
+}
+
+void
+quoc(void)
+{
+    switch (lookahead) {
+    case '*':
+    case '/':
+        match(lookahead);
+        fact();
+        quoc();
+        break;
+     case-1:case')':
+     case'+':case'-':
+		break;
+     default:
+        fprintf(stderr,
+	"ilegal trailing symbol: '%c'\n", lookahead);
+	exit(-3);
+    }
+}
+
+void
+fact(void)
+{
     switch (lookahead) {
     case ID:
         match(ID);
@@ -64,26 +90,13 @@ _fact:
 		match(ASGN); expr();
 	}
         break;
-    case UINT:
-        match(UINT);
-        break;
-    case FLT:
-        match(FLT);
+    case DEC:
+        match(DEC);
         break;
     default:
         match('(');
         expr();
         match(')');
-    }
-    /** abstract { oplus term }**/
-    if(otimes = isOTIMES()) {
-        match(otimes);
-        goto _fact;
-    }
-    /** abstract { oplus term }**/
-    if(oplus = isOPLUS()) {
-        match(oplus);
-        goto _term;
     }
 }
 

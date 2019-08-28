@@ -38,6 +38,19 @@ int isOPLUS(void) {
     }
 }
 
+void
+expr(void)
+{
+    int oplus;
+_term:
+    term();
+    /** abstract { oplus term }**/
+    if(oplus = isOPLUS()) {
+        match(oplus);
+        goto _term;
+    }
+}
+
 int isOTIMES(void){
     switch (lookahead) {
     case '*':
@@ -50,13 +63,21 @@ int isOTIMES(void){
 }
 
 void
-expr(void)
+term(void)
 {
-    int oplus;
     int otimes;
-_term:
 _fact:
-    //fact
+    fact();
+    /** abstract { oplus term }**/
+    if(otimes = isOTIMES()) {
+        match(otimes);
+        goto _fact;
+    }
+}
+
+void
+fact(void)
+{
     switch (lookahead) {
     case ID:
         match(ID);
@@ -64,26 +85,13 @@ _fact:
 		match(ASGN); expr();
 	}
         break;
-    case UINT:
-        match(UINT);
-        break;
-    case FLT:
-        match(FLT);
+    case DEC:
+        match(DEC);
         break;
     default:
         match('(');
         expr();
         match(')');
-    }
-    /** abstract { oplus term }**/
-    if(otimes = isOTIMES()) {
-        match(otimes);
-        goto _fact;
-    }
-    /** abstract { oplus term }**/
-    if(oplus = isOPLUS()) {
-        match(oplus);
-        goto _term;
     }
 }
 
