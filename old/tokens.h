@@ -3,7 +3,6 @@
  */
 enum {
     ID = 1024,
-    UINT,
-    FLT,
+    DEC,
     ASGN,
 };
