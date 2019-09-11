@@ -3,7 +3,7 @@
 
 CFLAGS=-g -I.
 
-expr: main.o lexer.o parser.o
+expr: main.o lexer.o parser-sem.o
 	$(CC) -o $@ $^
 
 clean:

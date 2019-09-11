@@ -22,6 +22,8 @@ main(int argc, char *argv[])
 
     expr();
 
+    fprintf(object, "\n");
+
     return 0;
 
 }
