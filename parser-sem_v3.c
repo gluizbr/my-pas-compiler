@@ -45,7 +45,6 @@ int isOPLUS(void) {
 }
 
 int isOTIMES(void){
-    int otimes = lookahead;
     switch (lookahead) {
     case '*':
         return '*';
