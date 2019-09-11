@@ -35,6 +35,8 @@ skipspaces(FILE * tape)
 /*
  * @ isID:: 
  */
+//TODO
+//change all head variable to use lexeme need to use 
 char lexeme[MAXIDLEN+1];
 int
 isID(FILE * tape)

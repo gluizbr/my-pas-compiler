@@ -8,7 +8,6 @@
 #include <parser.h>
 #include <tokens.h>
 #include <main.h>
-
 /*
  * lexer-to-parser interface 
  */
@@ -56,19 +55,9 @@ int isOTIMES(void){
 }
 
 void
-checkposfixed(int oplus, int otimes){
-    if(oplus > 0) {
-        /*[*/fprintf(object, " exec(%c)", oplus);/*]*/
-    } else if(otimes > 0) {
-        /*[*/fprintf(object, " exec(%c)", otimes);/*]*/
-    }
-}
-
-void
 expr(void)
 {
-    int oplus = 0;
-    int otimes = 0;
+    /*[*/int oplus = 0, otimes = 0;/*]*/
 _term:
     //term    
 _fact:
@@ -76,9 +65,6 @@ _fact:
     switch (lookahead) {
     case ID:
         /*[*/fprintf(object, " id");/*]*/
-        checkposfixed(oplus, otimes);
-        otimes = 0;
-        oplus = 0;
         match(ID);
 	if (lookahead == ASGN) {
 		match(ASGN); expr();
@@ -86,16 +72,10 @@ _fact:
         break;
     case UINT:
         /*[*/fprintf(object, " uint");/*]*/
-        checkposfixed(oplus, otimes);
-        otimes = 0;
-        oplus = 0;
         match(UINT);
         break;
     case FLT:
         /*[*/fprintf(object, " flt");/*]*/
-        checkposfixed(oplus, otimes);
-        otimes = 0;
-        oplus = 0;
         match(FLT);
         break;
     default:
@@ -103,10 +83,21 @@ _fact:
         expr();
         match(')');
     }
+    
+    if(otimes) {
+        /*[*/fprintf(object, " exec(%c)", otimes);/*]*/
+        /*[*/otimes = 0;/*]*/
+    }
+
     /** abstract { oplus term }**/
     if(otimes = isOTIMES()) {
         match(otimes);
         goto _fact;
+    }
+
+    if(oplus) {
+        /*[*/fprintf(object, " exec(%c)", oplus);/*]*/
+        /*[*/oplus = 0;/*]*/
     }
     /** abstract { oplus term }**/
     if(oplus = isOPLUS()) {
