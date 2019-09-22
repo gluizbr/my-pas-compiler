@@ -72,11 +72,11 @@ _fact:
         }
         break;
     case UINT:
-        /*[*/fprintf(object, " uint");/*]*/
+        /*[*/fprintf(object, " uint %s", lexeme);/*]*/
         match(UINT);
         break;
     case FLT:
-        /*[*/fprintf(object, " flt");/*]*/
+        /*[*/fprintf(object, " flt %s", lexeme);/*]*/
         match(FLT);
         break;
     default:

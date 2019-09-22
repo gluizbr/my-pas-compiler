@@ -35,8 +35,6 @@ skipspaces(FILE * tape)
 /*
  * @ isID:: 
  */
-//TODO
-//change all head variable to use lexeme need to use 
 char lexeme[MAXIDLEN+1];
 int
 isID(FILE * tape)
@@ -60,63 +58,75 @@ isID(FILE * tape)
  *          EE = [eE][\+\-]?[0-9]+
  *          FLT = UINT EE | FRAC EE?
  */
+int inum;
 int isNum(FILE *tape) {
     int token;
-    int head = getc(tape);
-    if (isdigit(head)) {
+    inum = 0;
+    lexeme[inum] = getc(tape);
+    if (isdigit(lexeme[inum])) {
         token = UINT;
-        if(head == '0') { head = getc(tape);}
+        if(lexeme[inum] == '0') { 
+            inum++;
+            lexeme[inum] = getc(tape);
+            }
         else {
-            while(isdigit(head = getc(tape)));
+            inum++;
+            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
         }
-        if (head == '.') {
-            while(isdigit(head = getc(tape)));
-            ungetc(head, tape);
+        if (lexeme[inum] == '.') {
+            inum++;
+            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
+            ungetc(lexeme[inum], tape);
             token = FLT;
+            lexeme[inum++] = 0;
             return token;
         }
-        ungetc(head, tape);
+        ungetc(lexeme[inum], tape);
+        lexeme[inum] = 0;
         return token;
-    } else if (head == '.') {
-        head = getc(tape);
-        if (isdigit(head)) {
-            while(isdigit(head = getc(tape)));
+    } else if (lexeme[inum] == '.') {
+        inum++;
+        lexeme[inum] = getc(tape);
+        if (isdigit(lexeme[inum])) {
+            inum++;
+            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
             token = FLT;
-            ungetc(head, tape);
+            ungetc(lexeme[inum], tape);
+            lexeme[inum] = 0;
             return token;
         }
-        ungetc(head, tape);
+        ungetc(lexeme[inum], tape);
         ungetc('.', tape);
         return 0;
     }
-    ungetc(head, tape);
+    ungetc(lexeme[inum], tape);
     return 0;
 }
 
 int isEE(FILE * tape){
-    int i = 0;
-    int head[HIST_SIZE];
-    head[i] = getc(tape);
-    if (toupper(head[i]) == 'E') {
-        i++;
-        head[i] = getc(tape);
-        if ((head[i] == '+') || (head[i] == '-')) {
-            i++;
+    int firstnum = inum;
+    lexeme[inum] = getc(tape);
+    if (toupper(lexeme[inum]) == 'E') {
+        inum++;
+        lexeme[inum] = getc(tape);
+        if ((lexeme[inum] == '+') || (lexeme[inum] == '-')) {
+            inum++;
         } else {
-            ungetc(head[i], tape); 
+            ungetc(lexeme[inum], tape); 
         }
-        head[i] = getc(tape);
-        if (isdigit(head[i])) {
-            while(isdigit(head[i++] = getc(tape)));
-            ungetc(head[i], tape);
-            head[i] = 0;
+        lexeme[inum] = getc(tape);
+        if (isdigit(lexeme[inum])) {
+            inum++;
+            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
+            ungetc(lexeme[inum], tape);
+            lexeme[inum] = 0;
             return FLT;
         }
-        for ( ; i > 0 ; i--) {
-            ungetc(head[i], tape);
+        for ( ; inum >= firstnum ; inum--) {
+            ungetc(lexeme[inum], tape);
         }
     }
-    ungetc(head[0], tape);
+    ungetc(lexeme[firstnum], tape);
     return 0;
 }
 
@@ -134,14 +144,13 @@ int isFLOAT(FILE * tape) {
 
 int isASGN(FILE *tape)
 {
-	int head = getc(tape);
-
-	if (head == ':') {
-		if ( (head = getc(tape)) == '=' ) {
+    lexeme[0] = getc(tape);
+	if (lexeme[0] == ':') {
+		if ( (lexeme[1] = getc(tape)) == '=' ) {
 			return ASGN;
 		}
 	}
-	ungetc(head, tape);
+	ungetc(lexeme[0], tape);
 	return 0;
 }
 
