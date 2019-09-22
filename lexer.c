@@ -43,7 +43,7 @@ isID(FILE * tape)
 {
     if (isalpha(lexeme[0] = getc(tape))) {
         int i;
-        for (i = 0 ; isalnum(lexeme[i] = getc(tape)) ; (i < MAXIDLEN) && i++)
+        for (i = 1 ; isalnum(lexeme[i] = getc(tape)) ; (i < MAXIDLEN) && i++);
         ungetc(lexeme[i], tape);
         lexeme[i] = 0;
         return ID;
@@ -162,7 +162,7 @@ gettoken(FILE * source)
 
     /*
      * lexical analysers are called hereafter: 
-     */
+     */   
 
     if (token = isID(source))
         return token;

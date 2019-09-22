@@ -7,6 +7,7 @@
 
 #include <parser.h>
 #include <tokens.h>
+#include <lexer.h>
 #include <main.h>
 /*
  * lexer-to-parser interface 
@@ -64,11 +65,11 @@ _fact:
     //fact
     switch (lookahead) {
     case ID:
-        /*[*/fprintf(object, " id");/*]*/
+        /*[*/fprintf(object, " %s", lexeme);/*]*/
         match(ID);
-	if (lookahead == ASGN) {
-		match(ASGN); expr();
-	}
+        if (lookahead == ASGN) {
+            match(ASGN); expr();
+        }
         break;
     case UINT:
         /*[*/fprintf(object, " uint");/*]*/
@@ -83,7 +84,6 @@ _fact:
         expr();
         match(')');
     }
-    
     if(otimes) {
         /*[*/fprintf(object, " exec(%c)", otimes);/*]*/
         /*[*/otimes = 0;/*]*/
