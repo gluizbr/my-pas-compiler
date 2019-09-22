@@ -78,7 +78,7 @@ int isNum(FILE *tape) {
             while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
             ungetc(lexeme[inum], tape);
             token = FLT;
-            lexeme[inum++] = 0;
+            lexeme[inum] = 0;
             return token;
         }
         ungetc(lexeme[inum], tape);
@@ -127,6 +127,7 @@ int isEE(FILE * tape){
         }
     }
     ungetc(lexeme[firstnum], tape);
+    lexeme[firstnum] = 0;
     return 0;
 }
 
