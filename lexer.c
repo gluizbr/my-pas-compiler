@@ -58,72 +58,70 @@ isID(FILE * tape)
  *          EE = [eE][\+\-]?[0-9]+
  *          FLT = UINT EE | FRAC EE?
  */
-int inum;
-int isNum(FILE *tape) {
+int isNum(FILE *tape, int * inum) {
     int token;
-    inum = 0;
-    lexeme[inum] = getc(tape);
-    if (isdigit(lexeme[inum])) {
+    lexeme[*inum] = getc(tape);
+    if (isdigit(lexeme[*inum])) {
         token = UINT;
-        if(lexeme[inum] == '0') { 
-            inum++;
-            lexeme[inum] = getc(tape);
+        if(lexeme[*inum] == '0') { 
+            (*inum)++;
+            lexeme[*inum] = getc(tape);
             }
         else {
-            inum++;
-            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
+            (*inum)++;
+            while(isdigit(lexeme[*inum] = getc(tape))) { (*inum)++; };
         }
-        if (lexeme[inum] == '.') {
-            inum++;
-            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
-            ungetc(lexeme[inum], tape);
+        if (lexeme[*inum] == '.') {
+            (*inum)++;
+            while(isdigit(lexeme[*inum] = getc(tape))) { (*inum)++; };
+            ungetc(lexeme[*inum], tape);
             token = FLT;
-            lexeme[inum] = 0;
+            lexeme[*inum] = 0;
             return token;
         }
-        ungetc(lexeme[inum], tape);
-        lexeme[inum] = 0;
+        ungetc(lexeme[*inum], tape);
+        lexeme[*inum] = 0;
         return token;
-    } else if (lexeme[inum] == '.') {
-        inum++;
-        lexeme[inum] = getc(tape);
-        if (isdigit(lexeme[inum])) {
-            inum++;
-            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
+    } else if (lexeme[*inum] == '.') {
+        (*inum)++;
+        lexeme[*inum] = getc(tape);
+        if (isdigit(lexeme[*inum])) {
+            (*inum)++;
+            while(isdigit(lexeme[*inum] = getc(tape))) { (*inum)++; };
             token = FLT;
-            ungetc(lexeme[inum], tape);
-            lexeme[inum] = 0;
+            ungetc(lexeme[*inum], tape);
+            lexeme[*inum] = 0;
             return token;
         }
-        ungetc(lexeme[inum], tape);
+        ungetc(lexeme[*inum], tape);
         ungetc('.', tape);
         return 0;
     }
-    ungetc(lexeme[inum], tape);
+    ungetc(lexeme[*inum], tape);
     return 0;
 }
 
-int isEE(FILE * tape){
-    int firstnum = inum;
-    lexeme[inum] = getc(tape);
-    if (toupper(lexeme[inum]) == 'E') {
-        inum++;
-        lexeme[inum] = getc(tape);
-        if ((lexeme[inum] == '+') || (lexeme[inum] == '-')) {
-            inum++;
+int isEE(FILE * tape, int * inum){
+    int firstnum = *inum;
+    lexeme[*inum] = getc(tape);
+    if (toupper(lexeme[*inum]) == 'E') {
+        (*inum)++;
+        lexeme[*inum] = getc(tape);
+        if ((lexeme[*inum] == '+') || (lexeme[*inum] == '-')) {
+            (*inum)++;
         } else {
-            ungetc(lexeme[inum], tape); 
+            ungetc(lexeme[*inum], tape); 
         }
-        lexeme[inum] = getc(tape);
-        if (isdigit(lexeme[inum])) {
-            inum++;
-            while(isdigit(lexeme[inum] = getc(tape))) { inum++; };
-            ungetc(lexeme[inum], tape);
-            lexeme[inum] = 0;
+        lexeme[*inum] = getc(tape);
+        if (isdigit(lexeme[*inum])) {
+            (*inum)++;
+            while(isdigit(lexeme[*inum] = getc(tape))) { (*inum)++; };
+            ungetc(lexeme[*inum], tape);
+            lexeme[*inum] = 0;
             return FLT;
         }
-        for ( ; inum >= firstnum ; inum--) {
-            ungetc(lexeme[inum], tape);
+        for ( ; *inum >= firstnum ; *inum--) {
+            ungetc(lexeme[*inum], tape);
         }
     }
     ungetc(lexeme[firstnum], tape);
@@ -132,12 +130,12 @@ int isEE(FILE * tape){
 }
 
 int isFLOAT(FILE * tape) {
-    int num = 0, ee = 0;
-    num = isNum(tape);
+    int num = 0, ee = 0, inum = 0;
+    num = isNum(tape, &inum);
     if (num == 0) {
         return 0;
     }
-    if((ee = isEE(tape)) > 0) {
+    if((ee = isEE(tape, &inum)) > 0) {
         return ee;
     }
     return num;
