@@ -1,0 +1,69 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <lexer.h>
+#include <string.h>
+#include <vmachine.h>
+
+double vmem[MEMSIZE];
+int vpm = 0;
+char symtb[MEMSIZE][MAXIDLEN+1];
+
+
+int symtab_lookup(char *symbol) {
+    // 
+    //percorre toda a tabela pra ver se existe o valor do symbol se existir retorna a posição i
+    int i;
+    for (i = 0 ; i < vpm ; i ++) {
+       if(strcmp(symbol, symtb[i]) == 0) return i;
+    }
+    // percorre tudo procurando o valor
+    return -1;
+}
+
+int symtb_add(char *symbol) {
+    int i = symtab_lookup(symbol);
+
+    if(i == -1) {
+        strcpy(symtb[vpm], symbol);
+    }
+    return i;
+}
+
+
+double execop(double arg1, double arg2, int op){
+    printf("\n new execop %f %f %c \n", arg1, arg2, op);
+    switch (op)
+    {
+    case '+':
+        printf("sum %f", (arg1 + arg2));
+        return (arg1 + arg2);
+        break;
+    case '-':
+        printf("sub %f", (arg1 - arg2));
+        return (arg1 - arg2);
+        break;
+    case '*':
+        printf("mult %f", (arg1 * arg2));
+        return (arg1 * arg2);
+        break;
+    case '/':
+        if(arg2) {
+            printf("div %f", (arg1 / arg2));
+            return (arg1 / arg2);
+        }
+        fprintf(stderr, "mybc: divison by zero.. exiting");
+        return(-666);
+    }
+}
+
+double acc = 0;
+void push(double arg){
+       acc = arg;    
+       printf("here the push value %f", acc); 
+}
+
+double pop(void){
+    double returnvalue = acc;
+    acc = 0;
+    return returnvalue;
+}

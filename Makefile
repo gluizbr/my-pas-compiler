@@ -3,7 +3,7 @@
 
 CFLAGS=-g -I.
 
-expr: main.o lexer.o parser-sem_v3.o
+expr: main.o lexer.o parser-sem_v3.o vmachine.o
 	$(CC) -o $@ $^
 
 clean:
@@ -12,4 +12,5 @@ clean:
 mostlyclean: clean
 	$(RM) *~
 
-
+ident:
+	ident -bap -ts4 -nut -orig -lexer.c main.c parser-sem_v3.c vmachine.c
