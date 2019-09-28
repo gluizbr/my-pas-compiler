@@ -87,6 +87,7 @@ _term:
 _fact:
     //fact
     if((oplus && otimes)){
+        //save value if there is one pending operation
         // printf("\n saved %d %d \n", oplus, otimes);
         saved = arg1;
         // printf("\n what number saved is? %f \n", saved);
