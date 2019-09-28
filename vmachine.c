@@ -62,6 +62,5 @@ void push(double arg){
 }
 
 double pop(void){
-    double returnvalue = acc;
-    return returnvalue;
+    return acc;
 }
