@@ -31,24 +31,24 @@ int symtb_add(char *symbol) {
 
 
 double execop(double arg1, double arg2, int op){
-    printf("\n new execop %f %f %c \n", arg1, arg2, op);
+    // printf("\n execop %f %f %c \n", arg1, arg2, op);
     switch (op)
     {
     case '+':
-        printf("sum %f", (arg1 + arg2));
+        // printf("\n sum %f \n", (arg1 + arg2));
         return (arg1 + arg2);
         break;
     case '-':
-        printf("sub %f", (arg1 - arg2));
+        // printf("\n sub %f \n", (arg1 - arg2));
         return (arg1 - arg2);
         break;
     case '*':
-        printf("mult %f", (arg1 * arg2));
+        // printf("\n mult %f \n", (arg1 * arg2));
         return (arg1 * arg2);
         break;
     case '/':
         if(arg2) {
-            printf("div %f", (arg1 / arg2));
+            // printf("\n div %f \n", (arg1 / arg2));
             return (arg1 / arg2);
         }
         fprintf(stderr, "mybc: divison by zero.. exiting");
@@ -59,11 +59,9 @@ double execop(double arg1, double arg2, int op){
 double acc = 0;
 void push(double arg){
        acc = arg;    
-       printf("here the push value %f", acc); 
 }
 
 double pop(void){
     double returnvalue = acc;
-    acc = 0;
     return returnvalue;
 }

@@ -16,6 +16,7 @@ int
 main(int argc, char *argv[])
 {
     source = stdin;
+
     object = stdout;
 
     lookahead = gettoken(source);

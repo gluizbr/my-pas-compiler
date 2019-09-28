@@ -77,7 +77,7 @@ expr(void)
 {
     /*[*/int oplus = 0, otimes = 0, oneg = 0;/*]*/
     /*[*/char vrname[MAXIDLEN+1]; int vradress = 0;/*]*/
-    double arg1 = 0;
+    double arg1 = 0, saved = 0;
     if (lookahead == '-' || lookahead == '+') {
         oneg = lookahead;
         match(oneg);
@@ -86,18 +86,22 @@ _term:
     //term    
 _fact:
     //fact
-    // if there is an oplus or otimes
-    // (oplus || otimes)
-    // double arg1 = pop()
-    if(oplus || otimes){
+    if((oplus && otimes)){
+        // printf("\n saved %d %d \n", oplus, otimes);
+        saved = arg1;
+        // printf("\n what number saved is? %f \n", saved);
+    }
+    if((oplus || otimes)){
+        // printf("\n is one of them? %d %d \n", oplus, otimes);
         arg1 = pop();
+        // printf("\n what number is? %f \n", arg1);
     }
     switch (lookahead) {
     case ID:
         /***********************/
         strcpy(vrname, lexeme);
         /***********************/
-        /*[*/fprintf(object, " %s", lexeme);/*]*/
+        // /*[*/fprintf(object, " %s", lexeme);/*]*/
         match(ID);
         if (lookahead == ASGN) {
             match(ASGN); expr();
@@ -115,12 +119,12 @@ _fact:
         break;
     case UINT:
         acc = atof(lexeme);
-        /*[*/fprintf(object, " uint %f", atof(lexeme));/*]*/
+        // /*[*/fprintf(object, " uint %f", atof(lexeme));/*]*/
         match(UINT);
         break;
     case FLT:
         acc = atof(lexeme);
-        /*[*/fprintf(object, " flt %f", atof(lexeme));/*]*/
+        // /*[*/fprintf(object, " flt %f", atof(lexeme));/*]*/
         match(FLT);
         break;
     default:
@@ -135,13 +139,15 @@ _fact:
     if(otimes) {
         //if there if already an otimes
         //execop(arg1, arg2, op)
-        acc = execop(pop(), acc, otimes);
-        /*[*/fprintf(object, " exec(%c)", otimes);/*]*/
+        // printf("\n pop on otimes \n");
+        acc = execop(arg1, acc, otimes);
+        // /*[*/fprintf(object, " exec(%c)", otimes);/*]*/
         /*[*/otimes = 0;/*]*/
     }
 
     /** abstract { oplus term }**/
     if(otimes = isOTIMES()) {
+        // printf("\n push on otimes \n");
         push(acc);
         match(otimes);
         goto _fact;
@@ -157,13 +163,18 @@ _fact:
     if(oplus) {
         //if there if already an oplus
         //push(execop(arg1, arg2, oplus))
-        acc = execop(pop(), acc, oplus);
-        /*[*/fprintf(object, " exec(%c)", oplus);/*]*/
+        // printf("\n pop on oplus \n");
+        if(saved > 0 || saved < 0) {
+            arg1 = saved;
+            saved = 0;
+        }
+        acc = execop(arg1, acc, oplus);
+        // /*[*/fprintf(object, " exec(%c)", oplus);/*]*/
         /*[*/oplus = 0;/*]*/
     }
     /** abstract { oplus term }**/
     if(oplus = isOPLUS()) {
-        printf("before push %f", acc);
+        // printf("push on push %f", acc);
         push(acc);
         match(oplus);
         goto _term;
