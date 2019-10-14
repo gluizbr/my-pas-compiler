@@ -8,7 +8,7 @@
 #include "include/parser.h"
 #include "include/tokens.h"
 #include "include/lexer.h"
-#include "vmachine.h"
+#include "include/vmachine.h"
 #include <string.h>
 #include "include/main.h"
 

@@ -93,6 +93,9 @@
 		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/include/parser.h">
 			<Option target="mybc"/>
 		</Unit>
+		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/include/vmachine.h">
+			<Option target="mybc"/>
+		</Unit>
 		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/lexer.c">
 			<Option target="mybc"/>
 		</Unit>
@@ -103,9 +106,6 @@
 			<Option target="mybc"/>
 		</Unit>
 		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/vmachine.c">
-			<Option target="mybc"/>
-		</Unit>
-		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/vmachine.h">
 			<Option target="mybc"/>
 		</Unit>
 		<Unit filename="/home/gabriel/Faculdade/Compiladores/my-pas-compiler/CMakeLists.txt">

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "include/lexer.h"
 #include <string.h>
-#include "vmachine.h"
+#include "include/vmachine.h"
 
 double vmem[MEMSIZE];
 int vpm = 1;

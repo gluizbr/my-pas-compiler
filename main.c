@@ -1,6 +1,7 @@
 /*
  * @<main.c>::
  * Authors:
+ * Grupo 1
  * Gabriel Luiz
  * Leonardo Cabbau
  * Valeria
