@@ -1,28 +1,39 @@
 /*
  * @<main.c>::
+ * Authors:
+ * Grupo 1
+ * Gabriel Luiz
+ * Leonardo Cabbau
+ * Valeria
  */
 
 /** system include libraries **/
 #include <stdio.h>
-
+#include <stdlib.h>
 /** NOTE: compile with -I. directive flag **/
-#include <parser.h>
+#include "include/parser.h"
+
 void mybc(void);
 
-FILE           *source,
-               *object;
+FILE *source,
+    *object;
 
 int
-main(int argc, char *argv[])
-{
+main(int argc, char *argv[]) {
+
+  if (argc > 1) {
+    source = fopen(argv[1], "r");
+    if (source == NULL) {
+      exit(-2);
+    }
+  } else {
     source = stdin;
+  }
+  object = stdout;
 
-    object = stdout;
+  lookahead = gettoken(source);
 
-    lookahead = gettoken(source);
+  mybc();
 
-    mybc();
-
-    return 0;
-
+  return 0;
 }

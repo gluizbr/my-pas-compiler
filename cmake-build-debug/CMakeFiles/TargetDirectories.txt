@@ -1,0 +1,3 @@
+/home/gabriel/Faculdade/Compiladores/my-pas-compiler/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/gabriel/Faculdade/Compiladores/my-pas-compiler/cmake-build-debug/CMakeFiles/mybc.dir
+/home/gabriel/Faculdade/Compiladores/my-pas-compiler/cmake-build-debug/CMakeFiles/edit_cache.dir
