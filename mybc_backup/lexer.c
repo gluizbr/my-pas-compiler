@@ -16,12 +16,9 @@
 #include <ctype.h>
 #include "include/lexer.h"
 #include "include/tokens.h"
-#include "include/keywords.h"
 #include <string.h>
 
 #define HIST_SIZE 10
-
-int linenumber = 1;
 
 /*
  * @ skipspaces:: 
@@ -31,9 +28,8 @@ skipspaces(FILE *tape) {
   int head;
 
   while (isspace(head = getc(tape))) {
-    if(head == '\n'){
-      linenumber++;
-    }
+    if (head == '\n')
+      break;
   }
 
   ungetc(head, tape);
@@ -45,19 +41,16 @@ skipspaces(FILE *tape) {
  */
 char lexeme[MAXIDLEN + 1];
 
-/*************
-ID = [A-Za-z][A-Za-z0-9_]*
-**************/
 int
 isID(FILE *tape) {
-
-  token_t token;
   if (isalpha(lexeme[0] = getc(tape))) {
     int i;
-    for (i = 1; (isalnum(lexeme[i] = getc(tape)) || lexeme[i] == '_'); (i < MAXIDLEN) && i++);
+    for (i = 1; isalnum(lexeme[i] = getc(tape)); (i < MAXIDLEN) && i++);
     ungetc(lexeme[i], tape);
     lexeme[i] = 0;
-    if(token = iskeywords(lexeme)) return token;
+    if (strcmp(lexeme, "exit") == 0) {
+      return EXIT;
+    }
     return ID;
   }
 
@@ -158,67 +151,8 @@ int isASGN(FILE *tape) {
   lexeme[0] = getc(tape);
   if (lexeme[0] == ':') {
     if ((lexeme[1] = getc(tape)) == '=') {
-      return ASSGN;
+      return ASGN;
     }
-  }
-  ungetc(lexeme[0], tape);
-  return 0;
-}
-
-
-/****************
-Implemenntado no analisador lexico: isRELOP(){};
-RELOP = "<"" | NEQ | LEQ | "=" | GEQ | ">"
-NEQ = "<>"
-LEQ = "<="
-GEQ = ">="
-****************/
-token_t isRELOP(FILE *tape){
-  lexeme[2] = lexeme[1] = 0;
-  switch(lexeme[0] = getc(tape)) {
-    case '<':
-      lexeme[1] = getc(tape);
-      if(lexeme[1] == '=') return LEQ;
-      if(lexeme[1] == '>') return NEQ;
-      ungetc(lexeme[1], tape);
-      lexeme[1] = 0;
-      return lexeme[0];
-    case '>':
-      lexeme[1] = getc(tape);
-      if(lexeme[1] == '=') return GEQ;
-      ungetc(lexeme[1], tape);
-      lexeme[1] = 0;
-      return lexeme[0];
-  };
-  ungetc(lexeme[0], tape);
-}
-
-/*******************
-STR = \"CHR*\"
-**************/
-int isSTR(FILE *tape) {
-  int i=1;
-  lexeme[0] = getc(tape);
-  if(isascii(lexeme[0])){
-    while (isascii(lexeme[i] = getc(tape))) {
-      i++;
-    }
-    ungetc(lexeme[i], tape);
-    lexeme[i] = 0;
-    return STR;
-  }
-  ungetc(lexeme[0], tape);
-  return 0;
-}
-
-/*******************
-CHR = \'[0x00-0xFF]\' (ASCII)
-**************/
-int isCHR(FILE *tape) {
-  lexeme[0] = getc(tape);
-  if(isascii(lexeme[0])){
-    lexeme[1] = 0;
-    return STR;
   }
   ungetc(lexeme[0], tape);
   return 0;
@@ -247,12 +181,6 @@ gettoken(FILE *source) {
   if (token = isFLOAT(source))
     return token;
   if (token = isASGN(source))
-    return token;
-  if (token = isRELOP(source))
-    return token;
-  if (token = isCHR(source))
-    return token;
-  if (token = isSTR(source))
     return token;
 
   /*

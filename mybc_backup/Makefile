@@ -1,11 +1,9 @@
 # My 1st Makefile
 # ter ago 13 21:02:30 -03 2019
 
-CFLAGS=-g -I${INCLUDE}
+CFLAGS=-g -I.
 
-INCLUDE=./include/
-
-mypas: main.o lexer.o parser.o keywords.o
+mybc: main.o lexer.o parser-sem.o vmachine.o
 	$(CC) -o $@ $^
 
 clean:

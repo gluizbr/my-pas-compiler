@@ -1,10 +1,13 @@
-/*
- * @<tokens.h>::
- */
-enum {
+/*****@<tokens.h>::****/
+
+enum{
     ID = 1024,
     UINT,
     FLT,
-    ASGN,
-    EXIT,
+    ASSGN, //ASSGN -> :=
+    LEQ,
+    NEQ,
+    GEQ,
+    CHR,
+    STR,
 };
