@@ -4,8 +4,8 @@
 
 /*****@<keywords.h>::****/
 #include "include/keywords.h"
-
-char keyword[] = {
+//TODO how this shit works?!
+char keyword[][25] = {
     "begin",
     "program",
     "var",

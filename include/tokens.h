@@ -8,4 +8,6 @@ enum{
     LEQ,
     NEQ,
     GEQ,
+    CHR,
+    STR,
 };

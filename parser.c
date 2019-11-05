@@ -15,10 +15,12 @@
  mypas -> [ PROGRAM ID '(' ID ',' ID ')' ';' ] declscope stmblock '.'
 *******************************************************************************/
 #include <ctype.h>
+#include <stdlib.h>
 #include "include/tokens.h"
 #include "include/keywords.h"
 #include "include/parser.h"
 #include "include/lexer.h"
+#include "include/main.h"
 
 token_t lookahead;
 char lexeme[MAXIDLEN + 1];
@@ -260,7 +262,7 @@ void term(void) {
 /*************************
 OTIMES = " * | / " | DIV | MOD | AND
 ************************/
-void isOTIMES(void) {
+int isOTIMES(void) {
   switch (lookahead) {
     case '*':
       return '*';
@@ -275,8 +277,6 @@ void isOTIMES(void) {
     default:
       return 0;
   }
-}
-
 }
 
 /***********************
@@ -295,15 +295,21 @@ void fact(void) {
       expr();
       match(')');
       break;
-    case isNUM():
-      match(NUM);
+//     TODO Desse jeito ta bom ou precisa fazer separado as funções?
+    case UINT:
+    case FLOAT:
+      match(lookahead);
       break;
-      //TODO vai pro lexer isASCII CHR
-    case isASCII(lookahead):
+    case CHR:
       match(CHR);
       break;
-      //TODO vai pro lexer isASCII STR
-    case isSTR():
+    case '\"':
+//      TODO esse match devia estar aqui ou o lexeme deveria guardar ele tambem?
+      match('\"');
+      if (lookahead == STR) {
+        match(lookahead);
+      }
+      match('\"');
       break;
     case TRUE:
       match(TRUE);
@@ -323,7 +329,7 @@ void fact(void) {
 /**************
 NUM = UINT | FLT
  *************/
-void isNUM(void) {
+int isNUM(void) {
   switch (lookahead) {
     case UINT:
       return UINT;
@@ -334,20 +340,18 @@ void isNUM(void) {
   }
 }
 
-/*******************
-STR = \"CHR*\"
-**************/
-//TODO vai pro lexer
-void isSTR(void) {
-
-  if (lookahead == "\"") {
-    match("\"");
-    while (isascii(lookahead)) {
-      match(lookahead);
-    }
-    match("\"");
+/*
+ * lexer-to-parser interface:
+ */
+void
+match(int expected) {
+  if (lookahead == expected) {
+    lookahead = gettoken(source);
+  } else {
+    fprintf(stderr,
+            "%d seen while %d was expected\n", lookahead, expected);
+    exit(-2);
   }
-  return 0;
 }
 
 /****************

@@ -158,6 +158,36 @@ int isASGN(FILE *tape) {
   return 0;
 }
 
+/*******************
+STR = \"CHR*\"
+**************/
+int isSTR(void) {
+  int i=1;
+  lexeme[0] = getc(tape);
+  if(isASCII(lexeme[0])){
+    while (isascii(lexeme[i] = getc(tape))) {
+     i++;
+    }
+    ungetc(lexeme[i], tape);
+    lexeme[i] = 0;
+    return STR;
+  }
+  ungetc(lexeme[0], tape);
+  return 0;
+}
+
+/*******************
+CHR = \'[0x00-0xFF]\' (ASCII)
+**************/
+int isCHR(void) {
+  lexeme[0] = getc(tape);
+  if(isASCII(lexeme[0])){
+    lexeme[1] = 0;
+    return STR;
+  }
+  ungetc(lexeme[0], tape);
+  return 0;
+}
 
 /*
  * lexer to parser interface: @ gettoken:: 
@@ -181,6 +211,10 @@ gettoken(FILE *source) {
   if (token = isFLOAT(source))
     return token;
   if (token = isASGN(source))
+    return token;
+  if (token = isCHR(source))
+    return token;
+  if (token = isSTR(source))
     return token;
 
   /*

@@ -31,7 +31,7 @@ main(int argc, char *argv[]) {
   }
   object = stdout;
 
-//  lookahead = gettoken(source);
+  lookahead = gettoken(source);
 
   mypas();
 
