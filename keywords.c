@@ -11,7 +11,7 @@ char keyword[][25] = {
     "var",
     "int",
     "long",
-    "float",
+    "real",
     "double",
     "boolean",
     "char",

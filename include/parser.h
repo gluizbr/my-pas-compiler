@@ -19,6 +19,7 @@ void expr(void);
 void smpexpr(void);
 int isOPLUS(void);
 void term(void);
+void exprlst(void);
 void fact(void);
 int isOTIMES(void);
 int isNUM(void);
@@ -26,3 +27,5 @@ int isNUM(void);
 void match(token_t expected);
 
 extern token_t lookahead;
+
+//line number

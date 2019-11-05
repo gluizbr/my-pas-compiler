@@ -70,7 +70,7 @@ void varlst(void) {
 }
 
 /*************************
-vartype -> INT | LONG | FLOAT | DOUBLE | BOOLEAN | CHAR | STRING
+vartype -> INT | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
 ****************/
 void vartype(void) {
   switch (lookahead) {
@@ -80,8 +80,8 @@ void vartype(void) {
     case LONG:
       match(LONG);
       break;
-    case FLOAT:
-      match(FLOAT);
+    case REAL:
+      match(REAL);
       break;
     case DOUBLE:
       match(DOUBLE);
@@ -106,7 +106,6 @@ void procdecl(void) {
   int isfunc;
   while (lookahead == PROCEDURE || (isfunc = lookahead == FUNCTION)) {
     match(lookahead);
-    match(ID);
     parmdef();
     if (isfunc) {
       match(':');
@@ -279,6 +278,19 @@ int isOTIMES(void) {
   }
 }
 
+/********************
+   * EBNF:
+   * exprlist -> expr { ',' expr }
+   */
+void exprlst(void) {
+  _expr:
+  expr();
+  if (lookahead == ',') {
+    match(',');
+    goto _expr;
+  }
+}
+
 /***********************
 fact ->   '(' expr ')'
 	| NUM
@@ -290,26 +302,15 @@ fact ->   '(' expr ')'
  ********************/
 void fact(void) {
   switch (lookahead) {
-    case '(':
-      match('(');
-      expr();
-      match(')');
-      break;
-//     TODO Desse jeito ta bom ou precisa fazer separado as funções?
     case UINT:
-    case FLOAT:
+    case REAL:
       match(lookahead);
       break;
     case CHR:
       match(CHR);
       break;
-    case '\"':
-//      TODO esse match devia estar aqui ou o lexeme deveria guardar ele tambem?
-      match('\"');
-      if (lookahead == STR) {
-        match(lookahead);
-      }
-      match('\"');
+    case STR:
+      match(STR);
       break;
     case TRUE:
       match(TRUE);
@@ -317,12 +318,22 @@ void fact(void) {
     case FALSE:
       match(FALSE);
       break;
-    default:
+    case ID:
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
         expr();
+      } else if (lookahead == '(') {
+        match('(');
+        exprlst();
+        match(')');
       }
+      break;
+    default:
+      match('(');
+      expr();
+      match(')');
+      break;
   }
 }
 

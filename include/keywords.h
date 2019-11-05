@@ -6,7 +6,7 @@ enum{
     VAR,
     INT,
     LONG,
-    FLOAT,
+    REAL,
     DOUBLE,
     BOOLEAN,
     CHAR,
