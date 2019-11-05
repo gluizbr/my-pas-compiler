@@ -193,6 +193,38 @@ token_t isRELOP(FILE *tape){
   ungetc(lexeme[0], tape);
 }
 
+/*******************
+STR = \"CHR*\"
+**************/
+int isSTR(FILE *tape) {
+  int i=1;
+  lexeme[0] = getc(tape);
+  if(isascii(lexeme[0])){
+    while (isascii(lexeme[i] = getc(tape))) {
+      i++;
+    }
+    ungetc(lexeme[i], tape);
+    lexeme[i] = 0;
+    return STR;
+  }
+  ungetc(lexeme[0], tape);
+  return 0;
+}
+
+/*******************
+CHR = \'[0x00-0xFF]\' (ASCII)
+**************/
+int isCHR(FILE *tape) {
+  lexeme[0] = getc(tape);
+  if(isascii(lexeme[0])){
+    lexeme[1] = 0;
+    return STR;
+  }
+  ungetc(lexeme[0], tape);
+  return 0;
+}
+
+
 /*
  * lexer to parser interface: @ gettoken:: 
  */
@@ -217,6 +249,10 @@ gettoken(FILE *source) {
   if (token = isASGN(source))
     return token;
   if (token = isRELOP(source))
+    return token;
+  if (token = isCHR(source))
+    return token;
+  if (token = isSTR(source))
     return token;
 
   /*
