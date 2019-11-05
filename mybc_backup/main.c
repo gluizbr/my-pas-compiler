@@ -13,7 +13,7 @@
 /** NOTE: compile with -I. directive flag **/
 #include "include/parser.h"
 
-void mypas(void);
+void mybc(void);
 
 FILE *source,
     *object;
@@ -31,9 +31,9 @@ main(int argc, char *argv[]) {
   }
   object = stdout;
 
-//  lookahead = gettoken(source);
+  lookahead = gettoken(source);
 
-  mypas();
+  mybc();
 
   return 0;
 }
