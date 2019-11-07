@@ -54,7 +54,7 @@ void skipcomments(FILE *tape) {
 }
 
 /*
- * @ isID::
+ * @ isID:: 
  */
 char lexeme[MAXIDLEN + 1];
 
@@ -252,7 +252,7 @@ int isCHR(FILE *tape) {
 
 
 /*
- * lexer to parser interface: @ gettoken::
+ * lexer to parser interface: @ gettoken:: 
  */
 
 int
