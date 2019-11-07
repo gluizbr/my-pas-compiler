@@ -9,7 +9,7 @@ char keyword[][25] = {
     "begin",
     "program",
     "var",
-    "int",
+    "integer",
     "long",
     "real",
     "double",

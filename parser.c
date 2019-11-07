@@ -5,15 +5,6 @@
  * Local standard date: ter out 29 09:38:03 -03 2019
  ******************************************************************************/
 
-/*******************************************************************************
- Syntax for simplified / modified Pascal, namely MyPas Project
-
- EBNF Grammar
-
- mypas: initial nonterminal symbol
-
- mypas -> [ PROGRAM ID '(' ID ',' ID ')' ';' ] declscope stmblock '.'
-*******************************************************************************/
 #include <ctype.h>
 #include <stdlib.h>
 #include "include/tokens.h"
@@ -21,10 +12,20 @@
 #include "include/parser.h"
 #include "include/lexer.h"
 #include "include/main.h"
+#include "include/symtab.h"
 
 token_t lookahead;
 char lexeme[MAXIDLEN + 1];
 
+/*******************************************************************************
+ Syntax for simplified / modified Pascal, namely MyPas Project
+
+ EBNF Grammar
+
+ mypas: initial nonterminal symbol
+
+ mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope procdecl stmblock '.'
+*******************************************************************************/
 void mypas(void) {
   if (lookahead == PROGRAM) {
     match(PROGRAM);
@@ -38,30 +39,50 @@ void mypas(void) {
   }
 
   declscope();
+  procdecl();
   stmblock();
+  match('.');
 }
 
+/**/ int symtab_initial, symtab_final; /**/
 
 /*******************************************************************************
 --------------------------------------------------------------------------------
-declscope -> { VAR varlst ':' vartype ';' } procdecl
+declscope -> { VAR varlst ':' vartype ';' }
 */
 void declscope(void) {
   while (lookahead == VAR) {
     match(VAR);
+    /***/
+    symtab_initial = symtab_descriptor;
+    /***/
     varlst();
+    /***/
+    symtab_final = symtab_descriptor;
+    /***/
     match(':');
     vartype();
     match(';');
   }
-  procdecl();
 }
 
 /******************
 varlst -> ID { ',' ID }
 */
+int fatalerrcount = 0;
 void varlst(void) {
+  /**/char *varname/**/;
   _varlst:
+  /************* a variable must be registered *********/
+  /**/
+  if(symtab_lookup(lexeme)){
+    /********** symbol arread declared *******/
+    fatalerrcount++;
+  } else {
+    /********** append new symbol on table ***********/
+    symtab_append(lexeme);
+  }
+  /**/
   match(ID);
   if (lookahead == ',') {
     match(',');
@@ -70,29 +91,50 @@ void varlst(void) {
 }
 
 /*************************
-vartype -> INT | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
+vartype -> INTEGER | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
 ****************/
 void vartype(void) {
   switch (lookahead) {
-    case INT:
-      match(INT);
+    case INTEGER:
+      /***/
+      symtab_type_range(1);
+      /***/
+      match(INTEGER);
       break;
     case LONG:
+      /***/
+      symtab_type_range(2);
+      /***/
       match(LONG);
       break;
     case REAL:
+      /***/
+      symtab_type_range(3);
+      /***/
       match(REAL);
       break;
     case DOUBLE:
+      /***/
+      symtab_type_range(4);
+      /***/
       match(DOUBLE);
       break;
     case BOOLEAN:
+      /***/
+      symtab_type_range(5);
+      /***/
       match(BOOLEAN);
       break;
     case CHAR:
+      /***/
+      symtab_type_range(6);
+      /***/
       match(CHAR);
       break;
     default:
+      /***/
+      symtab_type_range(7);
+      /***/
       match(STRING);
       break;
   }

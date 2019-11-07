@@ -10,5 +10,4 @@ enum{
     GEQ,
     CHR,
     STR,
-    EOF,
 };

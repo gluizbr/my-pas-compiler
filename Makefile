@@ -5,7 +5,7 @@ CFLAGS=-g -I${INCLUDE}
 
 INCLUDE=./include/
 
-mypas: main.o lexer.o parser.o keywords.o
+mypas: main.o lexer.o parser.o keywords.o symtab.o
 	$(CC) -o $@ $^
 
 clean:

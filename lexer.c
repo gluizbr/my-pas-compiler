@@ -29,7 +29,6 @@ int linenumber = 1;
 void
 skipspaces(FILE *tape) {
   int head;
-
   while (isspace(head = getc(tape))) {
     if (head == '\n') {
       linenumber++;
@@ -40,8 +39,22 @@ skipspaces(FILE *tape) {
 
 }
 
+void skipcomments(FILE *tape) {
+  int head;
+  _skipspaces:
+  skipspaces(tape);
+  if ((head == getc(tape)) == '{') {
+    while ((head == getc(tape)) != '}') {
+      if(head == EOF) {
+        return;
+      }
+    };
+    goto _skipspaces;
+  }
+}
+
 /*
- * @ isID:: 
+ * @ isID::
  */
 char lexeme[MAXIDLEN + 1];
 
@@ -239,7 +252,7 @@ int isCHR(FILE *tape) {
 
 
 /*
- * lexer to parser interface: @ gettoken:: 
+ * lexer to parser interface: @ gettoken::
  */
 
 int
@@ -249,7 +262,7 @@ gettoken(FILE *source) {
   /*
    * ignore left spaces
    */
-  skipspaces(source);
+  skipcomments(source);
 
   /*
    * lexical analysers are called hereafter:

@@ -1,16 +1,16 @@
 /*****@<keywords.h>::****/
 // transformar tudo em string
-enum{
+enum {
     BEGIN = 16384,
     PROGRAM,
     VAR,
-    INT,
-    LONG,
-    REAL,
-    DOUBLE,
-    BOOLEAN,
-    CHAR,
-    STRING,
+    INTEGER, //1
+    LONG, //2
+    REAL, //3
+    DOUBLE, //4
+    BOOLEAN, //5
+    CHAR, //6
+    STRING,  //7
     PROCEDURE,
     FUNCTION,
     IF,
@@ -29,4 +29,4 @@ enum{
     END,
 };
 
-int iskeywords(char * name);
+int iskeywords(char *name);

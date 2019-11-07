@@ -27,5 +27,6 @@ int isNUM(void);
 void match(token_t expected);
 
 extern token_t lookahead;
+extern int symtab_initial, symtab_final;
 
 //line number
