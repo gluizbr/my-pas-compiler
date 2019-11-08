@@ -5,15 +5,6 @@
  * Local standard date: ter out 29 09:38:03 -03 2019
  ******************************************************************************/
 
-/*******************************************************************************
- Syntax for simplified / modified Pascal, namely MyPas Project
-
- EBNF Grammar
-
- mypas: initial nonterminal symbol
-
- mypas -> [ PROGRAM ID '(' ID ',' ID ')' ';' ] declscope stmblock '.'
-*******************************************************************************/
 #include <ctype.h>
 #include <stdlib.h>
 #include "include/tokens.h"
@@ -25,6 +16,15 @@
 token_t lookahead;
 char lexeme[MAXIDLEN + 1];
 
+/*******************************************************************************
+ Syntax for simplified / modified Pascal, namely MyPas Project
+
+ EBNF Grammar
+
+ mypas: initial nonterminal symbol
+
+ mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope stmblock '.'
+*******************************************************************************/
 void mypas(void) {
   if (lookahead == PROGRAM) {
     match(PROGRAM);
@@ -39,6 +39,7 @@ void mypas(void) {
 
   declscope();
   stmblock();
+  match('.');
 }
 
 
@@ -60,7 +61,7 @@ void declscope(void) {
 /******************
 varlst -> ID { ',' ID }
 */
-void varlst(void) {
+void  varlst(void) {
   _varlst:
   match(ID);
   if (lookahead == ',') {
@@ -70,18 +71,18 @@ void varlst(void) {
 }
 
 /*************************
-vartype -> INT | LONG | FLOAT | DOUBLE | BOOLEAN | CHAR | STRING
+vartype -> INTEGER | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
 ****************/
 void vartype(void) {
   switch (lookahead) {
-    case INT:
-      match(INT);
+    case INTEGER:
+      match(INTEGER);
       break;
     case LONG:
       match(LONG);
       break;
-    case FLOAT:
-      match(FLOAT);
+    case REAL:
+      match(REAL);
       break;
     case DOUBLE:
       match(DOUBLE);
@@ -103,12 +104,12 @@ procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
               FUNCTION ID parmdef ':' vartype ';' declscope stmblock }
 ***********/
 void procdecl(void) {
-  int isfunc;
+  int isfunc = 0;
   while (lookahead == PROCEDURE || (isfunc = lookahead == FUNCTION)) {
     match(lookahead);
     match(ID);
     parmdef();
-    if (isfunc) {
+    if (isfunc != 0) {
       match(':');
       vartype();
     }
@@ -163,11 +164,22 @@ void stmlst(void) {
 stmt -> stmblock | ifstm | whilestm | repstm | fact
 *************/
 void stmt(void) {
-  stmblock();
-  ifstm();
-  whilestm();
-  repstm();
-  fact();
+  switch (lookahead) {
+    case BEGIN:
+      stmblock();
+      break;
+    case IF:
+      ifstm();
+      break;
+    case WHILE:
+      whilestm();
+      break;
+    case REPEAT:
+      repstm();
+      break;
+    default:
+      fact();
+  }
 }
 
 /**************
@@ -279,6 +291,19 @@ int isOTIMES(void) {
   }
 }
 
+/********************
+   * EBNF:
+   * exprlist -> expr { ',' expr }
+   */
+void exprlst(void) {
+  _expr:
+  expr();
+  if (lookahead == ',') {
+    match(',');
+    goto _expr;
+  }
+}
+
 /***********************
 fact ->   '(' expr ')'
 	| NUM
@@ -290,26 +315,15 @@ fact ->   '(' expr ')'
  ********************/
 void fact(void) {
   switch (lookahead) {
-    case '(':
-      match('(');
-      expr();
-      match(')');
-      break;
-//     TODO Desse jeito ta bom ou precisa fazer separado as funções?
     case UINT:
-    case FLOAT:
+    case FLT:
       match(lookahead);
       break;
     case CHR:
       match(CHR);
       break;
-    case '\"':
-//      TODO esse match devia estar aqui ou o lexeme deveria guardar ele tambem?
-      match('\"');
-      if (lookahead == STR) {
-        match(lookahead);
-      }
-      match('\"');
+    case STR:
+      match(STR);
       break;
     case TRUE:
       match(TRUE);
@@ -317,12 +331,18 @@ void fact(void) {
     case FALSE:
       match(FALSE);
       break;
-    default:
+    case ID:
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
         expr();
       }
+      break;
+    default:
+      match('(');
+      expr();
+      match(')');
+      break;
   }
 }
 

@@ -1,12 +1,11 @@
 /*****@<keywords.h>::****/
-// transformar tudo em string
 enum{
     BEGIN = 16384,
     PROGRAM,
     VAR,
-    INT,
+    INTEGER,
     LONG,
-    FLOAT,
+    REAL,
     DOUBLE,
     BOOLEAN,
     CHAR,
