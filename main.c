@@ -4,6 +4,7 @@
  * Grupo 1
  * Gabriel Luiz
  * Leonardo Cabbau
+ * Valeria
  */
 
 /** system include libraries **/
