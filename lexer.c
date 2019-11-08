@@ -81,10 +81,6 @@ isID(FILE *tape) {
   return 0;
 }
 
-//.mypas <<erro
-//.mypas <<mostrar
-
-
 /*
  * REGEX:
  *          UINT = [1-9][0-9]* | 0

@@ -291,19 +291,6 @@ int isOTIMES(void) {
   }
 }
 
-/********************
-   * EBNF:
-   * exprlist -> expr { ',' expr }
-   */
-void exprlst(void) {
-  _expr:
-  expr();
-  if (lookahead == ',') {
-    match(',');
-    goto _expr;
-  }
-}
-
 /***********************
 fact ->   '(' expr ')'
 	| NUM
