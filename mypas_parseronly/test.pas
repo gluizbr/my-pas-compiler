@@ -21,14 +21,10 @@ program test (input, output);
         if(n < 2) then
           fact := 1
         else
-          fact := n * (n-1);
-          while (n < 2) do
-            x := 1
+          fact := n * (n-1)
       end
-
   begin
-      write;
-      repeat x:= 1 until (n <= 2)
+      write
   end
 
 begin

@@ -9,6 +9,7 @@
  Syntax for simplified / modified Pascal, namely MyPas Project
 
  EBNF Grammar
+
  mypas: initial nonterminal symbol
 
  mypas -> [ PROGRAM ID (input ',' output) ';' ] declscope stmblock '.'
@@ -39,6 +40,7 @@ repstm -> REPEAT stmlst UNTIL expr
 -------------------------------------------------------------------------------
 expr: the top expression case, which can be either simple logic-arithmetic or
       relational
+
 expr -> smpexpr [ RELOP smpexpr ]
 RELOP = "< | <> | <= | = | >= | >"
 
@@ -58,7 +60,7 @@ CHR = \'[0x00-0xFF]\' (ASCII)
 STR = \"CHR*\"
 ID = [A-Za-z][A-Za-z0-9_]*
 
-Notes::
+Notes:: 
  1. low case variable means nonterminals whereas upper case means tokens, or
  terminal symbols. Of course, explicit ASCII characters are standard terminals;
  2. this is not Pascal, neither C.

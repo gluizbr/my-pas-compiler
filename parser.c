@@ -12,8 +12,10 @@
 #include "include/parser.h"
 #include "include/lexer.h"
 #include "include/main.h"
+#include "include/symtab.h"
 
 token_t lookahead;
+int symtab_descriptor;
 char lexeme[MAXIDLEN + 1];
 
 /*******************************************************************************
@@ -23,7 +25,7 @@ char lexeme[MAXIDLEN + 1];
 
  mypas: initial nonterminal symbol
 
- mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope stmblock '.'
+ mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope procdecl stmblock '.'
 *******************************************************************************/
 void mypas(void) {
   if (lookahead == PROGRAM) {
@@ -38,12 +40,14 @@ void mypas(void) {
   }
 
   declscope();
+  procdecl();
   stmblock();
   match('.');
 }
 
+/**/ int symtab_initial, symtab_final; /**/
 /*
- * @ declscope:: 
+ * @ declscope::
  */
 /**************************************************************************************
 declscope:
@@ -54,16 +58,26 @@ declscope:
 void declscope(void) {
   while (lookahead == VAR) {
     match(VAR);
+    /***/
+    symtab_initial = symtab_descriptor;
+    /***/
     varlst();
+    /***/
+    symtab_final = symtab_descriptor;
+    /***/
     match(':');
     vartype();
     match(';');
   }
-  procdecl();
 }
 
+/******************
+varlst -> ID { ',' ID }
+*/
+int fatalerrcount = 0;
+/**/char *varname/**/;
 /*
- * @ varlst:: 
+ * @ varlst::
  */
 /**************************************************************************************
 varlst:
@@ -73,6 +87,16 @@ varlst:
 ****************************************************************************************/
 void  varlst(void) {
   _varlst:
+  /************* a variable must be registered *********/
+  /**/
+  if(symtab_lookup(lexeme)){
+    /********** symbol arread declared *******/
+    fatalerrcount++;
+  } else {
+    /********** append new symbol on table ***********/
+    symtab_append(lexeme);
+  }
+  /**/
   match(ID);
   if (lookahead == ',') {
     match(',');
@@ -81,7 +105,7 @@ void  varlst(void) {
 }
 
 /*
- * @ vartype:: 
+ * @ vartype::
  */
 /**************************************************************************************
 varlst:
@@ -100,31 +124,52 @@ varlst:
 void vartype(void) {
   switch (lookahead) {
     case INTEGER:
+      /***/
+      symtab_type_range(1);
+      /***/
       match(INTEGER);
       break;
     case LONG:
+      /***/
+      symtab_type_range(2);
+      /***/
       match(LONG);
       break;
     case REAL:
+      /***/
+      symtab_type_range(3);
+      /***/
       match(REAL);
       break;
     case DOUBLE:
+      /***/
+      symtab_type_range(4);
+      /***/
       match(DOUBLE);
       break;
     case BOOLEAN:
+      /***/
+      symtab_type_range(5);
+      /***/
       match(BOOLEAN);
       break;
     case CHAR:
+      /***/
+      symtab_type_range(6);
+      /***/
       match(CHAR);
       break;
     default:
+      /***/
+      symtab_type_range(7);
+      /***/
       match(STRING);
       break;
   }
 }
 
 /*
- * @ procdecl:: 
+ * @ procdecl::
  */
 /**************************************************************************************
 procdecl:
@@ -171,7 +216,7 @@ void parmdef(void) {
 }
 
 /*
- * @ stmblock:: 
+ * @ stmblock::
  */
 /**************************************************************************************
 stmblock:
@@ -186,7 +231,7 @@ void stmblock(void) {
 }
 
 /*
- * @ stmlst:: 
+ * @ stmlst::
  */
 /**************************************************************************************
 stmlst:
@@ -203,7 +248,7 @@ void stmlst(void) {
 }
 
 /*
- * @ stmt:: 
+ * @ stmt::
  */
 /**************************************************************************************
 stmt:
@@ -231,7 +276,7 @@ void stmt(void) {
 }
 
 /*
- * @ ifstm:: 
+ * @ ifstm::
  */
 /**************************************************************************************
 ifstm:
@@ -251,7 +296,7 @@ void ifstm(void) {
 }
 
 /*
- * @ whilestm:: 
+ * @ whilestm::
  */
 /**************************************************************************************
 whilestm:
@@ -267,7 +312,7 @@ void whilestm(void) {
 }
 
 /*
- * @ repstm:: 
+ * @ repstm::
  */
 /**************************************************************************************
 repstm:
@@ -283,7 +328,7 @@ void repstm(void) {
 }
 
 /*
- * @ expr:: 
+ * @ expr::
  */
 /**************************************************************************************
 expr:
@@ -301,7 +346,7 @@ void expr(void) {
 }
 
 /*
- * @ smpexpr:: 
+ * @ smpexpr::
  */
 /**************************************************************************************
 smpexpr:
@@ -321,7 +366,7 @@ void smpexpr(void) {
 }
 
 /*
- * @ isOPLUS:: 
+ * @ isOPLUS::
  */
 /**************************************************************************************
 isOPLUS:
@@ -343,7 +388,7 @@ int isOPLUS(void) {
 }
 
 /*
- * @ term:: 
+ * @ term::
  */
 /**************************************************************************************
 term:
@@ -360,7 +405,7 @@ void term(void) {
 }
 
 /*
- * @ isOTIMES:: 
+ * @ isOTIMES::
  */
 /**************************************************************************************
 isOTIMES:
@@ -385,8 +430,21 @@ int isOTIMES(void) {
   }
 }
 
+/********************
+   * EBNF:
+   * exprlist -> expr { ',' expr }
+   */
+void exprlst(void) {
+  _expr:
+  expr();
+  if (lookahead == ',') {
+    match(',');
+    goto _expr;
+  }
+}
+
 /*
- * @ fact:: 
+ * @ fact::
  */
 /**************************************************************************************
 fact:
@@ -423,6 +481,10 @@ void fact(void) {
       if (lookahead == ASSGN) {
         match(ASSGN);
         expr();
+      } else if (lookahead == '(') {
+        match('(');
+        exprlst();
+        match(')');
       }
       break;
     default:
@@ -434,7 +496,7 @@ void fact(void) {
 }
 
 /*
- * @ isNUM:: 
+ * @ isNUM::
  */
 /**************************************************************************************
 isNUM:
@@ -454,7 +516,7 @@ int isNUM(void) {
 }
 
 /*
- * @ match:: 
+ * @ match::
  */
 /**************************************************************************************
 match:

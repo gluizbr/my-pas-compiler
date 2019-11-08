@@ -3,9 +3,6 @@
 
 #include "lexer.h"
 
-/*
- * @ declarative functions of parser.c::
- */
 void mypas(void);
 void declscope(void);
 void varlst(void);
@@ -22,7 +19,6 @@ void expr(void);
 void smpexpr(void);
 int isOPLUS(void);
 void term(void);
-void exprlst(void);
 void fact(void);
 int isOTIMES(void);
 int isNUM(void);
@@ -30,6 +26,5 @@ int isNUM(void);
 void match(token_t expected);
 
 extern token_t lookahead;
-extern int symtab_initial, symtab_final;
 
 //line number
