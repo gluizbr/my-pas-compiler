@@ -45,7 +45,7 @@ void mypas(void) {
 
 /*******************************************************************************
 --------------------------------------------------------------------------------
-declscope -> { VAR varlst ':' vartype ';' }
+declscope -> { VAR varlst ':' vartype ';' } procdecl
 */
 void declscope(void) {
   while (lookahead == VAR) {
@@ -55,12 +55,13 @@ void declscope(void) {
     vartype();
     match(';');
   }
+  procdecl();
 }
 
 /******************
 varlst -> ID { ',' ID }
 */
-void varlst(void) {
+void  varlst(void) {
   _varlst:
   match(ID);
   if (lookahead == ',') {
@@ -103,11 +104,12 @@ procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
               FUNCTION ID parmdef ':' vartype ';' declscope stmblock }
 ***********/
 void procdecl(void) {
-  int isfunc;
+  int isfunc = 0;
   while (lookahead == PROCEDURE || (isfunc = lookahead == FUNCTION)) {
     match(lookahead);
+    match(ID);
     parmdef();
-    if (isfunc) {
+    if (isfunc != 0) {
       match(':');
       vartype();
     }
@@ -162,11 +164,22 @@ void stmlst(void) {
 stmt -> stmblock | ifstm | whilestm | repstm | fact
 *************/
 void stmt(void) {
-  stmblock();
-  ifstm();
-  whilestm();
-  repstm();
-  fact();
+  switch (lookahead) {
+    case BEGIN:
+      stmblock();
+      break;
+    case IF:
+      ifstm();
+      break;
+    case WHILE:
+      whilestm();
+      break;
+    case REPEAT:
+      repstm();
+      break;
+    default:
+      fact();
+  }
 }
 
 /**************
@@ -303,7 +316,7 @@ fact ->   '(' expr ')'
 void fact(void) {
   switch (lookahead) {
     case UINT:
-    case REAL:
+    case FLT:
       match(lookahead);
       break;
     case CHR:

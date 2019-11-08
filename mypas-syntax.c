@@ -23,8 +23,9 @@ declscope: declarative scope
 declscope -> VAR varlst ':' vartype ';' { VAR varlst ':' vartype ';' } procdecl
 varlst -> ID { ',' ID }
 vartype -> INT | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
-procdecl -> { PROCEDURE parmdef ';' declscope stmblock |
-              FUNCTION  parmdef ':' vartype ';' declscope stmblock }
+procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
+              FUNCTION  ID parmdef ':' vartype ';' declscope stmblock }
+parmdef -> [ '(' [VAR] varlst ':' vartype { ';' [VAR] varlst ':' vartype }  ')' ]
 stmblock -> BEGIN stmtlst END
 stmlst -> stmt { ';' stmt }
 

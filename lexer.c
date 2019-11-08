@@ -34,7 +34,6 @@ skipspaces(FILE *tape) {
       linenumber++;
     }
   }
-
   ungetc(head, tape);
 
 }
@@ -43,14 +42,15 @@ void skipcomments(FILE *tape) {
   int head;
   _skipspaces:
   skipspaces(tape);
-  if ((head == getc(tape)) == '{') {
-    while ((head == getc(tape)) != '}') {
-      if(head == EOF) {
+  if ((head = getc(tape)) == '{') {
+    while ((head = getc(tape)) != '}') {
+      if (head == EOF) {
         return;
       }
     };
     goto _skipspaces;
   }
+  ungetc(head, tape);
 }
 
 /*
@@ -65,12 +65,15 @@ int
 isID(FILE *tape) {
 
   token_t token;
-  if (isalpha(lexeme[0] = getc(tape))) {
+  lexeme[0] = getc(tape);
+  if (isalpha(lexeme[0])) {
     int i;
     for (i = 1; (isalnum(lexeme[i] = getc(tape)) || lexeme[i] == '_'); (i < MAXIDLEN) && i++);
     ungetc(lexeme[i], tape);
     lexeme[i] = 0;
-    if (token = iskeywords(lexeme)) return token;
+    if (token = iskeywords(lexeme)){
+      return token;
+    }
     return ID;
   }
 
@@ -175,8 +178,10 @@ int isASGN(FILE *tape) {
   lexeme[0] = getc(tape);
   if (lexeme[0] == ':') {
     if ((lexeme[1] = getc(tape)) == '=') {
+      lexeme[2] = 0;
       return ASSGN;
     }
+    ungetc(lexeme[1], tape);
   }
   ungetc(lexeme[0], tape);
   return 0;
@@ -189,7 +194,7 @@ NEQ = "<>"
 LEQ = "<="
 GEQ = ">="
 ****************/
-token_t isRELOP(FILE *tape) {
+int isRELOP(FILE *tape) {
   lexeme[2] = lexeme[1] = 0;
   switch (lexeme[0] = getc(tape)) {
     case '<':
@@ -207,6 +212,7 @@ token_t isRELOP(FILE *tape) {
       return lexeme[0];
   };
   ungetc(lexeme[0], tape);
+  return 0;
 }
 
 /*******************
@@ -237,11 +243,13 @@ int isCHR(FILE *tape) {
   lexeme[0] = getc(tape);
   if (lexeme[0] == '\'') {
     lexeme[i] = getc(tape);
+    i++;
     if ((lexeme[i] = getc(tape)) == '\'') {
       i++;
       lexeme[i] = 0;
       return CHR;
     }
+    ungetc(lexeme[i], tape);
     ungetc(lexeme[1], tape);
     ungetc(lexeme[0], tape);
     return 0;
@@ -268,21 +276,29 @@ gettoken(FILE *source) {
    * lexical analysers are called hereafter:
    */
 
-  if (token = isID(source))
+  if (token = isID(source)) {
     return token;
-  if (token = isREAL(source))
+  }
+  if (token = isREAL(source)){
     return token;
-  if (token = isASGN(source))
+  }
+  if (token = isASGN(source)) {
     return token;
-  if (token = isRELOP(source))
+  }
+  if (token = isRELOP(source)) {
     return token;
-  if (token = isCHR(source))
+  }
+  if (token = isCHR(source)) {
     return token;
-  if (token = isSTR(source))
+  }
+  if (token = isSTR(source)) {
     return token;
+  }
 
+  token = getc(source);
   /*
    * return default token, say an ASCII value
    */
-  return getc(source);
+
+  return token;
 }
