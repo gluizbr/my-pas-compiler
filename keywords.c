@@ -4,6 +4,11 @@
 
 /*****@<keywords.h>::****/
 #include "include/keywords.h"
+
+/*******************************************************************************
+keyword:
+        *Array of keywords that simulates a dictionary for the words used.
+********************************************************************************/
 char *keyword[] = {
     "begin",
     "program",
@@ -33,6 +38,10 @@ char *keyword[] = {
     "end",
 };
 
+/*******************************************************************************
+iskeywords:
+        * Function that verify 
+********************************************************************************/
 #include <string.h>
 int iskeywords(char * name){
   int token;

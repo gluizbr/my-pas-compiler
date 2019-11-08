@@ -42,11 +42,15 @@ void mypas(void) {
   match('.');
 }
 
-
-/*******************************************************************************
---------------------------------------------------------------------------------
-declscope -> { VAR varlst ':' vartype ';' } procdecl
-*/
+/*
+ * @ declscope:: 
+ */
+/**************************************************************************************
+declscope:
+            *Function made for verify the pattern of an declarative scope.
+    Pattern:
+            *declscope -> { VAR varlst ':' vartype ';' } procdecl
+****************************************************************************************/
 void declscope(void) {
   while (lookahead == VAR) {
     match(VAR);
@@ -58,9 +62,15 @@ void declscope(void) {
   procdecl();
 }
 
-/******************
-varlst -> ID { ',' ID }
-*/
+/*
+ * @ varlst:: 
+ */
+/**************************************************************************************
+varlst:
+            *Function made for verify the pattern of an variable list.
+    Pattern:
+            *varlst -> ID { ',' ID }
+****************************************************************************************/
 void  varlst(void) {
   _varlst:
   match(ID);
@@ -70,9 +80,23 @@ void  varlst(void) {
   }
 }
 
-/*************************
-vartype -> INTEGER | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
-****************/
+/*
+ * @ vartype:: 
+ */
+/**************************************************************************************
+varlst:
+            *Function made for verify the pattern of an variable type.
+            *TYPES
+                  -INTEGER
+                  -LONG
+                  -REAL
+                  -DOUBLE
+                  -BOOLEAN
+                  -CHAR
+                  -STRING
+    Pattern:
+            *vartype -> INTEGER | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
+****************************************************************************************/
 void vartype(void) {
   switch (lookahead) {
     case INTEGER:
@@ -99,10 +123,16 @@ void vartype(void) {
   }
 }
 
-/*********************
-procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
+/*
+ * @ procdecl:: 
+ */
+/**************************************************************************************
+procdecl:
+            *Function made for verify the pattern of an procedure declaration.
+    Pattern:
+            *procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
               FUNCTION ID parmdef ':' vartype ';' declscope stmblock }
-***********/
+****************************************************************************************/
 void procdecl(void) {
   int isfunc = 0;
   while (lookahead == PROCEDURE || (isfunc = lookahead == FUNCTION)) {
@@ -140,18 +170,30 @@ void parmdef(void) {
   }
 }
 
-/*************
-stmblock -> BEGIN stmtlst END
-**************/
+/*
+ * @ stmblock:: 
+ */
+/**************************************************************************************
+stmblock:
+            *Function made for verify the pattern of an statement block.
+    Pattern:
+            *stmblock -> BEGIN stmtlst END
+****************************************************************************************/
 void stmblock(void) {
   match(BEGIN);
   stmlst();
   match(END);
 }
 
-/*************
-stmlst -> stmt { ';' stmt }
-*******************************************************************************/
+/*
+ * @ stmlst:: 
+ */
+/**************************************************************************************
+stmlst:
+            *Function made for verify the pattern of an statement list.
+    Pattern:
+            *stmlst -> stmt { ';' stmt }
+****************************************************************************************/
 void stmlst(void) {
   stmt();
   while (lookahead == ';') {
@@ -160,9 +202,15 @@ void stmlst(void) {
   }
 }
 
-/*******************************************************************************
-stmt -> stmblock | ifstm | whilestm | repstm | fact
-*************/
+/*
+ * @ stmt:: 
+ */
+/**************************************************************************************
+stmt:
+            *Function made for verify the pattern of an statement.
+    Pattern:
+            *stmt -> stmblock | ifstm | whilestm | repstm | fact
+****************************************************************************************/
 void stmt(void) {
   switch (lookahead) {
     case BEGIN:
@@ -182,9 +230,15 @@ void stmt(void) {
   }
 }
 
-/**************
-ifstm -> IF expr THEN stmt [ ELSE stmt ]
-**************/
+/*
+ * @ ifstm:: 
+ */
+/**************************************************************************************
+ifstm:
+            *Function made for verify the pattern of an if statement.
+    Pattern:
+            *ifstm -> IF expr THEN stmt [ ELSE stmt ]
+****************************************************************************************/
 void ifstm(void) {
   match(IF);
   expr();
@@ -196,9 +250,15 @@ void ifstm(void) {
   }
 }
 
-/******************
-whilestm -> WHILE expr DO stmt
- **********************/
+/*
+ * @ whilestm:: 
+ */
+/**************************************************************************************
+whilestm:
+            *Function made for verify the pattern of an while statement.
+    Pattern:
+            *whilestm -> WHILE expr DO stmt
+****************************************************************************************/
 void whilestm(void) {
   match(WHILE);
   expr();
@@ -206,9 +266,15 @@ void whilestm(void) {
   stmt();
 }
 
-/****************
-repstm -> REPEAT stmlst UNTIL expr
-******************************************************************************/
+/*
+ * @ repstm:: 
+ */
+/**************************************************************************************
+repstm:
+            *Function made for verify the pattern of an while statement.
+    Pattern:
+            *repstm -> REPEAT stmlst UNTIL expr
+****************************************************************************************/
 void repstm(void) {
   match(REPEAT);
   stmlst();
@@ -216,10 +282,15 @@ void repstm(void) {
   expr();
 }
 
-
-/*******************************************************************************
-expr -> smpexpr [ RELOP smpexpr ]
-*********************/
+/*
+ * @ expr:: 
+ */
+/**************************************************************************************
+expr:
+            *Function made for verify the pattern of an expression.
+    Pattern:
+            *expr -> smpexpr [ RELOP smpexpr ]
+****************************************************************************************/
 void expr(void) {
   smpexpr();
   if (lookahead == '<' || lookahead == NEQ || lookahead == LEQ || lookahead == '=' || lookahead == GEQ ||
@@ -229,9 +300,15 @@ void expr(void) {
   }
 }
 
-/***************************
-smpexpr -> ['+'|'-'] term { OPLUS term }
-***************************/
+/*
+ * @ smpexpr:: 
+ */
+/**************************************************************************************
+smpexpr:
+            *Function made for verify the pattern of a sum expression.
+    Pattern:
+            *smpexpr -> ['+'|'-'] term { OPLUS term }
+****************************************************************************************/
 void smpexpr(void) {
   if (lookahead == '+' || lookahead == '-') {
     match(lookahead);
@@ -243,10 +320,15 @@ void smpexpr(void) {
   }
 }
 
-
-/**************************
-OPLUS = " + | - " | OR
-****************************/
+/*
+ * @ isOPLUS:: 
+ */
+/**************************************************************************************
+isOPLUS:
+            *Function made for verify the pattern.
+    Pattern:
+            *OPLUS = " + | - " | OR
+****************************************************************************************/
 int isOPLUS(void) {
   switch (lookahead) {
     case '+':
@@ -260,9 +342,15 @@ int isOPLUS(void) {
   }
 }
 
-/**************************
-term -> fact { OTIMES fact }
-**************************/
+/*
+ * @ term:: 
+ */
+/**************************************************************************************
+term:
+            *Function made for verify the pattern of a term.
+    Pattern:
+            *term -> fact { OTIMES fact }
+****************************************************************************************/
 void term(void) {
   fact();
   while (isOTIMES()) {
@@ -271,9 +359,15 @@ void term(void) {
   }
 }
 
-/*************************
-OTIMES = " * | / " | DIV | MOD | AND
-************************/
+/*
+ * @ isOTIMES:: 
+ */
+/**************************************************************************************
+isOTIMES:
+            *Function made for verify the pattern.
+    Pattern:
+            *OTIMES = " * | / " | DIV | MOD | AND
+****************************************************************************************/
 int isOTIMES(void) {
   switch (lookahead) {
     case '*':
@@ -291,15 +385,21 @@ int isOTIMES(void) {
   }
 }
 
-/***********************
-fact ->   '(' expr ')'
-	| NUM
-	| CHR
-	| STR
-	| TRUE
-	| FALSE
-	| ID [ ":=" expr ]
- ********************/
+/*
+ * @ fact:: 
+ */
+/**************************************************************************************
+fact:
+            *Function made for verify the pattern of a factor.
+    Pattern:
+            *fact ->   '(' expr ')'
+                      | NUM
+                      | CHR
+                      | STR
+                      | TRUE
+                      | FALSE
+                      | ID [ ":=" expr ]
+****************************************************************************************/
 void fact(void) {
   switch (lookahead) {
     case UINT:
@@ -333,9 +433,15 @@ void fact(void) {
   }
 }
 
-/**************
-NUM = UINT | FLT
- *************/
+/*
+ * @ isNUM:: 
+ */
+/**************************************************************************************
+isNUM:
+            *Function made for verify the pattern of a number.
+    Pattern:
+            *NUM = UINT | FLT
+****************************************************************************************/
 int isNUM(void) {
   switch (lookahead) {
     case UINT:
@@ -348,8 +454,12 @@ int isNUM(void) {
 }
 
 /*
- * lexer-to-parser interface:
+ * @ match:: 
  */
+/**************************************************************************************
+match:
+            *lexer-to-parser interface:
+****************************************************************************************/
 void
 match(int expected) {
   if (lookahead == expected) {
@@ -360,20 +470,3 @@ match(int expected) {
     exit(-2);
   }
 }
-
-/****************
-Notes:: 
- 1. low case variable means nonterminals whereas upper case means tokens, or
- terminal symbols. Of course, explicit ASCII characters are standard terminals;
- 2. this is not Pascal, neither C.
-*******************************************************************************/
-
-/**** Atividade:
- * 1. Com base na sintaxe acima exposta, implemente um analisador sintático (parser)
- * para cada uma das produções. Observe que os tokens serão tratados no nível léxico
- * mas esses podem ser, em alguns casos, tratados diretamente no parser, na forma
- * de funções predicado.
- *
- * 2. Aumente o analisador léxico para os tokens que sejam mais bem definidos
- * na parte léxica do pré-compilador.
- ****/
