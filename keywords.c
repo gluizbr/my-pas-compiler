@@ -4,14 +4,13 @@
 
 /*****@<keywords.h>::****/
 #include "include/keywords.h"
-//TODO how this shit works?!
-char keyword[][25] = {
+char *keyword[] = {
     "begin",
     "program",
     "var",
-    "int",
+    "integer",
     "long",
-    "float",
+    "real",
     "double",
     "boolean",
     "char",
@@ -38,9 +37,9 @@ char keyword[][25] = {
 int iskeywords(char * name){
   int token;
   for (token = BEGIN; token < END + 1; token++){
-    if(strcmp(keyword[token-BEGIN], name)){
+    if((strcmp(keyword[token-BEGIN], name)) == 0){
       return token;
     }
-    return 0;
   }
+  return 0;
 }

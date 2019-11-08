@@ -26,3 +26,5 @@ int isNUM(void);
 void match(token_t expected);
 
 extern token_t lookahead;
+
+//line number
