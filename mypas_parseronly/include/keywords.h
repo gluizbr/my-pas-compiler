@@ -28,4 +28,7 @@ enum{
     END,
 };
 
+/*
+ * @ iskeywords:: 
+ */
 int iskeywords(char * name);

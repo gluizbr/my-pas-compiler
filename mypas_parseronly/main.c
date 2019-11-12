@@ -4,6 +4,7 @@
  * Grupo 1
  * Gabriel Luiz
  * Leonardo Cabbau
+ * Valeria
  */
 
 /** system include libraries **/
@@ -32,8 +33,8 @@ main(int argc, char *argv[]) {
           exit(-2);
         }
       } else {
-        printf("Invalid extension. Only valid .mypas and .pas extensions");
-        return 0;
+        printf("Invalid extension. Only valid .mypas and .pas extensions\n");
+        exit(-3);
       }
     }
 

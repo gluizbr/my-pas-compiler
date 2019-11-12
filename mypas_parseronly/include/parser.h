@@ -3,6 +3,9 @@
 
 #include "lexer.h"
 
+/*
+ * @ declarative functions of parser.c:: 
+ */
 void mypas(void);
 void declscope(void);
 void varlst(void);
@@ -26,5 +29,3 @@ int isNUM(void);
 void match(token_t expected);
 
 extern token_t lookahead;
-
-//line number
