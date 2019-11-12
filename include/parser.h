@@ -3,6 +3,8 @@
 
 #include "lexer.h"
 
+typedef int type_t;
+
 /*
  * @ declarative functions of parser.c::
  */
@@ -18,12 +20,12 @@ void stmt(void);
 void ifstm(void);
 void whilestm(void);
 void repstm(void);
-void expr(void);
-void smpexpr(void);
 int isOPLUS(void);
-void term(void);
 void exprlst(void);
-void fact(void);
+type_t expr(type_t parent_type);
+type_t smpexpr(type_t parent_type);
+type_t term(type_t parent_type);
+type_t fact(type_t parent_type);
 int isOTIMES(void);
 int isNUM(void);
 

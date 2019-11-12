@@ -13,6 +13,7 @@
 #include "include/lexer.h"
 #include "include/main.h"
 #include "include/symtab.h"
+#include "include/default.h"
 
 token_t lookahead;
 int symtab_descriptor;
@@ -85,11 +86,11 @@ varlst:
     Pattern:
             *varlst -> ID { ',' ID }
 ****************************************************************************************/
-void  varlst(void) {
+void varlst(void) {
   _varlst:
   /************* a variable must be registered *********/
   /**/
-  if(symtab_lookup(lexeme)){
+  if (symtab_lookup(lexeme)) {
     /********** symbol arread declared *******/
     fatalerrcount++;
   } else {
@@ -336,13 +337,18 @@ expr:
     Pattern:
             *expr -> smpexpr [ RELOP smpexpr ]
 ****************************************************************************************/
-void expr(void) {
-  smpexpr();
+type_t expr(type_t parent_type) {
+  /***/
+  type_t t1, t2 = 0;
+  /***/
+  t1 = smpexpr(parent_type);
   if (lookahead == '<' || lookahead == NEQ || lookahead == LEQ || lookahead == '=' || lookahead == GEQ ||
       lookahead == '>') {
     match(lookahead);
-    smpexpr();
+    t2 = smpexpr(max(t1, parent_type));
   }
+  if (t2) return t2;
+  return t1;
 }
 
 /*
@@ -352,16 +358,22 @@ void expr(void) {
 smpexpr:
             *Function made for verify the pattern of a sum expression.
     Pattern:
-            *smpexpr -> ['+'|'-'] term { OPLUS term }
+    #todo NOT
+            *smpexpr -> ['+'|'-'|NOT] term { OPLUS term }
 ****************************************************************************************/
-void smpexpr(void) {
-  if (lookahead == '+' || lookahead == '-') {
+type_t smpexpr(type_t parent_type) {
+  /***/
+  type_t acctype = 0;
+  /***/
+  if (isNEG()) {
     match(lookahead);
   }
-  term();
-  while (isOPLUS()) {
+  _term:
+  parent_type = max(parent_type, acctype);
+  acctype = term(parent_type);
+  if (isOPLUS()) {
     match(lookahead);
-    term();
+    goto _term;
   }
 }
 
@@ -396,11 +408,16 @@ term:
     Pattern:
             *term -> fact { OTIMES fact }
 ****************************************************************************************/
-void term(void) {
-  fact();
-  while (isOTIMES()) {
+type_t term(type_t parent_type) {
+  /***/
+  type_t acctype = 0;
+  /***/
+  _fact:
+  parent_type = max(parent_type, acctype);
+  acctype = fact(parent_type);
+  if (isOTIMES()) {
     match(lookahead);
-    fact();
+    goto _fact;
   }
 }
 
@@ -433,10 +450,12 @@ int isOTIMES(void) {
 /********************
    * EBNF:
    * exprlist -> expr { ',' expr }
+   *
    */
+   //*todo modificar tem que ter uma variavel
 void exprlst(void) {
   _expr:
-  expr();
+  expr(0);
   if (lookahead == ',') {
     match(',');
     goto _expr;
@@ -458,10 +477,27 @@ fact:
                       | FALSE
                       | ID [ ":=" expr ]
 ****************************************************************************************/
-void fact(void) {
+
+
+type_t fact(type_t parent_type) {
+
+  /***/
+  int var_descr;
+  type_t acctype;
+  /***/
+
   switch (lookahead) {
     case UINT:
+      /***/
+      acctype = max(parent_type, 1);
+      /***/
+      match(lookahead);
+      break;
     case FLT:
+      /***/
+      //todo verificar o tipo se é ponto flutuante ou simples
+      acctype = max(parent_type, 3);
+      /***/
       match(lookahead);
       break;
     case CHR:
@@ -477,10 +513,16 @@ void fact(void) {
       match(FALSE);
       break;
     case ID:
+      /***/
+      acctype = symtab[var_descr = symtab_lookup(lexeme)].typedescriptor;
+      /***/
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
-        expr();
+        //todo validar se é compativel
+        /***/
+        acctype = expr(parent_type);
+        /***/
       } else if (lookahead == '(') {
         match('(');
         exprlst();
@@ -489,10 +531,11 @@ void fact(void) {
       break;
     default:
       match('(');
-      expr();
+      acctype = expr(parent_type);
       match(')');
       break;
   }
+  return max(acctype, parent_type);
 }
 
 /*

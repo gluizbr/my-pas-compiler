@@ -11,8 +11,6 @@ typedef struct __symtab__ {
     int typedescriptor;
 } SYMTAB;
 
-SYMTAB symtab[MAXSYMTAB];
-
 /* symtab_lookup looks up for a given symbol and, if existing returns the current symbol descriptor*/
 int symtab_lookup(char *symbol) {
   int stbd;

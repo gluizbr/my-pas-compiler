@@ -13,6 +13,8 @@ int symtab_append(char * symbol);
 
 extern int symtab_descriptor;
 
+extern SYMTAB symtab[MAXSYMTAB];
+
 int symtab_type_range(int type_descriptor);
 
 #define MAXSYMTAB 0x100000000
