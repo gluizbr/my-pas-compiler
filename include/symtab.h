@@ -3,6 +3,9 @@
 //
 /****@<symtab.h>::*****/
 #pragma once
+#define MAXSYMTAB 0x100000000
+
+#include "lexer.h"
 
 /* symtab_lookup looks up for a given symbol and, if existing returns the current symbol descriptor*/
 int symtab_lookup(char * symbol);
@@ -13,8 +16,11 @@ int symtab_append(char * symbol);
 
 extern int symtab_descriptor;
 
-extern SYMTAB symtab[MAXSYMTAB];
-
 int symtab_type_range(int type_descriptor);
 
-#define MAXSYMTAB 0x100000000
+typedef struct __symtab__ {
+    char name[MAXIDLEN];
+    int typedescriptor;
+} SYMTAB;
+
+extern SYMTAB symtab[MAXSYMTAB];

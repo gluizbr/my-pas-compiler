@@ -19,11 +19,11 @@ program test (input, output);
       begin
         i := 1;
         if(n < 2) then
-          fact := 1
+          1E+38
         else
           fact := n * (n-1);
           while (n < 2) do
-            x := 1
+            34531145
       end
 
   begin

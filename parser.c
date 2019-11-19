@@ -93,6 +93,7 @@ void varlst(void) {
   if (symtab_lookup(lexeme)) {
     /********** symbol arread declared *******/
     fatalerrcount++;
+//    TODO criar isCompact(t1, t2) -> para checkar se é compativel na hora de fazer a comparação
   } else {
     /********** append new symbol on table ***********/
     symtab_append(lexeme);
@@ -272,7 +273,7 @@ void stmt(void) {
       repstm();
       break;
     default:
-      fact();
+      fact(0);
   }
 }
 
@@ -287,7 +288,7 @@ ifstm:
 ****************************************************************************************/
 void ifstm(void) {
   match(IF);
-  expr();
+  expr(0);
   match(THEN);
   stmt();
   if (lookahead == ELSE) {
@@ -307,7 +308,7 @@ whilestm:
 ****************************************************************************************/
 void whilestm(void) {
   match(WHILE);
-  expr();
+  expr(0);
   match(DO);
   stmt();
 }
@@ -325,7 +326,7 @@ void repstm(void) {
   match(REPEAT);
   stmlst();
   match(UNTIL);
-  expr();
+  expr(0);
 }
 
 /*
@@ -374,6 +375,23 @@ type_t smpexpr(type_t parent_type) {
   if (isOPLUS()) {
     match(lookahead);
     goto _term;
+  }
+}
+
+/**************************************************************************************
+isNEG:
+      isNEG -> ['+'|'-'|NOT]
+****************************************************************************************/
+int isNEG(void) {
+  switch (lookahead) {
+    case '+':
+      return '+';
+    case '-':
+      return '-';
+    case NOT:
+      return NOT;
+    default:
+      return 0;
   }
 }
 
@@ -485,31 +503,48 @@ type_t fact(type_t parent_type) {
   int var_descr;
   type_t acctype;
   /***/
+//todo while, if, etc colocar 0 só por em quanto
 
   switch (lookahead) {
     case UINT:
       /***/
-      acctype = max(parent_type, 1);
+      //todo verificar se é 1 ou 2
+      printf("selected uint type: %d", checKUint());
+      acctype = max(parent_type, checKUint());
       /***/
       match(lookahead);
       break;
     case FLT:
       /***/
-      //todo verificar o tipo se é ponto flutuante ou simples
-      acctype = max(parent_type, 3);
+//      3 ou 4
+      //todo verificar o tipo se é ponto flutuante ou simples usar lexeme fazer comparação verificar se é 32 bits ou 64 bits ver a faixa olhar precisão ou a faixa de expoente OLHAR NA INTERNET
+      printf("selected flt type: %d", checkFlt());
+      acctype = max(parent_type, checkFlt());
       /***/
       match(lookahead);
       break;
     case CHR:
+//      /***/
+//      acctype = max(parent_type, 6);
+//      /***/
       match(CHR);
       break;
     case STR:
+//      /***/
+//      acctype = max(parent_type, 7);
+//      /***/
       match(STR);
       break;
     case TRUE:
+//      /***/
+//      acctype = max(parent_type, 5);
+//      /***/
       match(TRUE);
       break;
     case FALSE:
+//      /***/
+//      acctype = max(parent_type, 5);
+//      /***/
       match(FALSE);
       break;
     case ID:
@@ -536,6 +571,24 @@ type_t fact(type_t parent_type) {
       break;
   }
   return max(acctype, parent_type);
+}
+
+type_t checKUint() {
+  double value = atof(lexeme);
+  printf("\n uint %f", value);
+  if (value > -32768 && value < 32767) return 1;
+  return 2;
+}
+
+type_t checkFlt() {
+  //5.0E-324 .. 1.7E308
+  char * min = "5.0E-324";
+  float value = strtof(lexeme, NULL);
+  printf("\n float %f \n", value);
+  if(value >  strtof(min, NULL) && value < strtof("1.7E308", NULL)) {
+    return 4;
+  }
+  return 3;
 }
 
 /*

@@ -25,6 +25,7 @@ enum{
     AND,
     FALSE,
     TRUE,
+    NOT,
     END,
 };
 

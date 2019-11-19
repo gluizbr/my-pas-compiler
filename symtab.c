@@ -6,11 +6,8 @@
 #include "include/symtab.h"
 #include "include/lexer.h"
 #include <string.h>
-typedef struct __symtab__ {
-    char name[MAXIDLEN];
-    int typedescriptor;
-} SYMTAB;
 
+SYMTAB symtab[MAXSYMTAB];
 /* symtab_lookup looks up for a given symbol and, if existing returns the current symbol descriptor*/
 int symtab_lookup(char *symbol) {
   int stbd;
