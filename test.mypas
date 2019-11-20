@@ -1,6 +1,10 @@
+{
+  isto e um codigo teste,  sintaticamente aceito pelo parser
+}
+
 var x,y : real;
 begin
-    if
+    if (x > y) then
         x := x + 2 * y
     else
         x := x + 2 / y

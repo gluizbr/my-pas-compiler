@@ -3,8 +3,9 @@
 //
 /****@<symtab.h>::*****/
 #pragma once
-#define MAXSYMTAB 0x100000000
-
+#todo check MAXSYMTAB definition
+//#define MAXSYMTAB 0x100000000
+#define MAXSYMTAB 1000000
 #include "lexer.h"
 
 /* symtab_lookup looks up for a given symbol and, if existing returns the current symbol descriptor*/

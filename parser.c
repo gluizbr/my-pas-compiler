@@ -551,7 +551,7 @@ type_t fact(type_t parent_type) {
       //todo verificar se é 1 ou 2 comparar pelo tamanho da string com o maior de 32
 //      printf("selected uint type: %d", checKUint());
 //      acctype = MAX(parent_type, checKUint());
-      printf("selected uint type: %f", atof(lexeme));
+//      printf("selected uint type: %f", atof(lexeme));
       acctype = MAX(parent_type, 2);
       /***/
       match(lookahead);
@@ -562,7 +562,7 @@ type_t fact(type_t parent_type) {
       //todo verificar o tipo se é ponto flutuante ou simples usar lexeme fazer comparação verificar se é 32 bits ou 64 bits ver a faixa olhar precisão ou a faixa de expoente OLHAR NA INTERNET
 //      printf("selected flt type: %d", checkFlt());
 //      acctype = MAX(parent_type, checkFlt());
-      printf("selected flt type: %f", atof(lexeme));
+//      printf("selected flt type: %f", atof(lexeme));
       acctype = MAX(parent_type, 4);
       /***/
       match(lookahead);

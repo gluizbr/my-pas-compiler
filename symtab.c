@@ -26,7 +26,7 @@ int symtab_append(char *symbol) {
   return symtab_descriptor++;
 }
 
-int symtab_descriptor = 1;
+int symtab_descriptor;
 
 int symtab_type_range(int type_descriptor) {
   return 0;
