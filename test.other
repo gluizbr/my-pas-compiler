@@ -1,36 +1,111 @@
 {
-  isto e um codigo teste,  sintaticamente aceito pelo parser
+var x,y : real;
+begin
+    if
+        x := x + 2 * y
+    else
+        x := x + 2 / y
+end.
 }
 
-program test (input, output);
-
-  var i, j, k: integer;
-  var x, y, z: real;
-  var u, v: string;
-  var p, q: boolean;
-
-  procedure test_proc(x, y: real; var j: integer);
-
-    var
-    m,n : integer;
-    function fact(n: integer): integer;
-      var i: integer;
-
-      begin
-        i := 1;
-        if(n < 2) then
-          fact := 1
-        else
-          fact := n * (n-1);
-          while (n < 2) do
-            x := 1
-      end
-
-  begin
-      write;
-      repeat x:= 1 until (n <= 2)
-  end
-
+{
+var x,y : real;
 begin
-    test_proc
+    while x > y do
+    begin
+        x := x + 2 * y
+    end
 end.
+}
+
+{
+var x,y : real;
+begin
+    x := 0; y := 2;
+    repeat
+        x := x + 2 * y
+    until x > y
+end.
+}
+
+var x,y : real;
+begin
+    x := 0; y := 2;
+    repeat
+        x := x + 2 * y
+    until x > y
+end.
+
+# esp = esp
+# x + 2 * y
+
+    movl x, %eax
+    pushl %eax
+    movl $2, %eax
+    pushl %eax
+    movl y, %eax
+    imull (%esp)
+    addl $4, %esp
+    addl (%esp), %eax
+
+# x + y * z
+
+    movl x, %eax
+    pushl %eax
+    movl y, %eax
+    pushl %eax
+    movl z, %eax
+    imull (%esp)
+    addl $4, %esp
+    addl (%esp), %eax
+    addl $4, %esp
+
+# x - y / z
+    movl x, %eax
+    pushl %eax # equiv to pushl x
+    movl y, %eax
+    pushl %eax # equiv to pushl y
+    movl z, %eax
+    #compute y / z
+    movl %eax,  %ecx
+    popl %eax
+    cltd
+    idivl %ecx
+# y / z -> %eax
+# y % z -> %edx
+    subl %eax, (%esp)
+    popl %eax
+# x - y / z -> %eax
+
+
+
+
+# a + b
+    movl a, %eax
+    pushl %eax
+    movl b, %eax
+    addl %eax, (%esp)
+    popl %eax
+
+# a - b
+    movl a, %eax
+    pushl %eax
+    movl b, %eax
+    subl %eax, (%esp)
+    popl %eax
+
+# a * b
+    movl a, %eax
+    pushl %eax
+    movl b, %eax
+    imull (%esp)
+    addl $4, %esp
+# a / b
+    movl a, %eax
+    pushl %eax
+    movl b, %ecx
+    pop %eax
+    cltd
+    idivl %ecx
+
+smpexpr -> isnegate term { oplus term }

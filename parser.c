@@ -286,15 +286,30 @@ ifstm:
     Pattern:
             *ifstm -> IF expr THEN stmt [ ELSE stmt ]
 ****************************************************************************************/
+/***/
+  int lblcount = 1;
+/***/
 void ifstm(void) {
   match(IF);
   expr(0);
+  /***/
+  int lblendif, lblelse;
+  fprintf(object, "\tjz .L%d\n", lblendif = lblelse = lblcount++);
+  /***/
+
   match(THEN);
   stmt();
   if (lookahead == ELSE) {
+    /***/
+    fprintf(object, "\tjmp .L%d\n", lblendif = lblcount++);
+    fprintf(object, "\t.L%d:\n", lblelse);
+    /***/
     match(ELSE);
     stmt();
   }
+  /***/
+  fprintf(object, "\t.L%d:\n", lblendif);
+  /***/
 }
 
 /*
@@ -307,10 +322,23 @@ whilestm:
             *whilestm -> WHILE expr DO stmt
 ****************************************************************************************/
 void whilestm(void) {
+  /***/
+  int lblwhile, lblwend;
+  /***/
   match(WHILE);
+  /***/
+  fprintf(object, ".L%d:\n", lblwhile = lblcount++);
+  /***/
   expr(0);
+  /***/
+  fprintf(object, "\tjz .L%d\n", lblwend = lblcount++);
+  /***/
   match(DO);
   stmt();
+  /***/
+  fprintf(object, "\tjmp .L%d\n", lblwhile);
+  fprintf(object, ".L%d:\n", lblwend);
+  /***/
 }
 
 /*
@@ -323,10 +351,19 @@ repstm:
             *repstm -> REPEAT stmlst UNTIL expr
 ****************************************************************************************/
 void repstm(void) {
+  /***/
+  int lblrepeat;
+  /***/
   match(REPEAT);
+  /***/
+  fprintf(object, ".L%d:\n", lblrepeat = lblcount++);
+  /***/
   stmlst();
   match(UNTIL);
   expr(0);
+  /***/
+  fprintf(object, "\tjz .L%d\n", lblrepeat);
+  /***/
 }
 
 /*
@@ -346,7 +383,7 @@ type_t expr(type_t parent_type) {
   if (lookahead == '<' || lookahead == NEQ || lookahead == LEQ || lookahead == '=' || lookahead == GEQ ||
       lookahead == '>') {
     match(lookahead);
-    t2 = smpexpr(max(t1, parent_type));
+    t2 = smpexpr(MAX(t1, parent_type));
   }
   if (t2) return t2;
   return t1;
@@ -370,7 +407,7 @@ type_t smpexpr(type_t parent_type) {
     match(lookahead);
   }
   _term:
-  parent_type = max(parent_type, acctype);
+  parent_type = MAX(parent_type, acctype);
   acctype = term(parent_type);
   if (isOPLUS()) {
     match(lookahead);
@@ -431,7 +468,7 @@ type_t term(type_t parent_type) {
   type_t acctype = 0;
   /***/
   _fact:
-  parent_type = max(parent_type, acctype);
+  parent_type = MAX(parent_type, acctype);
   acctype = fact(parent_type);
   if (isOTIMES()) {
     match(lookahead);
@@ -501,6 +538,9 @@ type_t fact(type_t parent_type) {
 
   /***/
   int var_descr;
+  type_t var_type;
+  type_t  expr_type;
+
   type_t acctype;
   /***/
 //todo while, if, etc colocar 0 só por em quanto
@@ -508,9 +548,11 @@ type_t fact(type_t parent_type) {
   switch (lookahead) {
     case UINT:
       /***/
-      //todo verificar se é 1 ou 2
-      printf("selected uint type: %d", checKUint());
-      acctype = max(parent_type, checKUint());
+      //todo verificar se é 1 ou 2 comparar pelo tamanho da string com o maior de 32
+//      printf("selected uint type: %d", checKUint());
+//      acctype = MAX(parent_type, checKUint());
+      printf("selected uint type: %f", atof(lexeme));
+      acctype = MAX(parent_type, 2);
       /***/
       match(lookahead);
       break;
@@ -518,32 +560,34 @@ type_t fact(type_t parent_type) {
       /***/
 //      3 ou 4
       //todo verificar o tipo se é ponto flutuante ou simples usar lexeme fazer comparação verificar se é 32 bits ou 64 bits ver a faixa olhar precisão ou a faixa de expoente OLHAR NA INTERNET
-      printf("selected flt type: %d", checkFlt());
-      acctype = max(parent_type, checkFlt());
+//      printf("selected flt type: %d", checkFlt());
+//      acctype = MAX(parent_type, checkFlt());
+      printf("selected flt type: %f", atof(lexeme));
+      acctype = MAX(parent_type, 4);
       /***/
       match(lookahead);
       break;
     case CHR:
 //      /***/
-//      acctype = max(parent_type, 6);
+//      acctype = MAX(parent_type, 6);
 //      /***/
       match(CHR);
       break;
     case STR:
 //      /***/
-//      acctype = max(parent_type, 7);
+//      acctype = MAX(parent_type, 7);
 //      /***/
       match(STR);
       break;
     case TRUE:
 //      /***/
-//      acctype = max(parent_type, 5);
+//      acctype = MAX(parent_type, 5);
 //      /***/
       match(TRUE);
       break;
     case FALSE:
 //      /***/
-//      acctype = max(parent_type, 5);
+//      acctype = MAX(parent_type, 5);
 //      /***/
       match(FALSE);
       break;
@@ -551,6 +595,8 @@ type_t fact(type_t parent_type) {
       /***/
       acctype = symtab[var_descr = symtab_lookup(lexeme)].typedescriptor;
       /***/
+//      acctype
+//      var_type
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
@@ -562,6 +608,9 @@ type_t fact(type_t parent_type) {
         match('(');
         exprlst();
         match(')');
+//        fprintf(varname)
+      } else {
+//        fprintf(object, , varname);
       }
       break;
     default:
@@ -570,26 +619,26 @@ type_t fact(type_t parent_type) {
       match(')');
       break;
   }
-  return max(acctype, parent_type);
+  return MAX(acctype, parent_type);
 }
 
-type_t checKUint() {
-  double value = atof(lexeme);
-  printf("\n uint %f", value);
-  if (value > -32768 && value < 32767) return 1;
-  return 2;
-}
-
-type_t checkFlt() {
-  //5.0E-324 .. 1.7E308
-  char * min = "5.0E-324";
-  float value = strtof(lexeme, NULL);
-  printf("\n float %f \n", value);
-  if(value >  strtof(min, NULL) && value < strtof("1.7E308", NULL)) {
-    return 4;
-  }
-  return 3;
-}
+//type_t checKUint() {
+//  double value = atof(lexeme);
+//  printf("\n uint %f", value);
+//  if (value > -32768 && value < 32767) return 1;
+//  return 2;
+//}
+//
+//type_t checkFlt() {
+//  //5.0E-324 .. 1.7E308
+//  char * min = "5.0E-324";
+//  float value = strtof(lexeme, NULL);
+//  printf("\n float %f \n", value);
+//  if(value >  strtof(min, NULL) && value < strtof("1.7E308", NULL)) {
+//    return 4;
+//  }
+//  return 3;
+//}
 
 /*
  * @ isNUM::

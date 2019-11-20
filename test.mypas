@@ -1,36 +1,7 @@
-{
-  isto e um codigo teste,  sintaticamente aceito pelo parser
-}
-
-program test (input, output);
-
-  var i, j, k: integer;
-  var x, y, z: real;
-  var u, v: string;
-  var p, q: boolean;
-
-  procedure test_proc(x, y: real; var j: integer);
-
-    var
-    m,n : integer;
-    function fact(n: integer): integer;
-      var i: integer;
-
-      begin
-        i := 1;
-        if(n < 2) then
-          1E+38
-        else
-          fact := n * (n-1);
-          while (n < 2) do
-            34531145
-      end
-
-  begin
-      write;
-      repeat x:= 1 until (n <= 2)
-  end
-
+var x,y : real;
 begin
-    test_proc
+    if
+        x := x + 2 * y
+    else
+        x := x + 2 / y
 end.
