@@ -1,6 +1,3 @@
-//
-// Created by gabriel on 05/11/2019.
-//
 /****@<symtab.h>::*****/
 #pragma once
 //#todo check MAXSYMTAB definition

@@ -1,8 +1,0 @@
-Fazer tar para manter estrutra para entrega:
-tar zcvf mybc.tar.gz ./mybc
-Criar pasta include com os arquivos .h
-
-Para extrair
-tar ztvf mybc.tar.gz (listar o que há no arquivo)
-
-pereira.marinho@unesp.br

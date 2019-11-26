@@ -1,1 +1,0 @@
-/usr/bin/cc -g  -rdynamic CMakeFiles/mybc.dir/main.o CMakeFiles/mybc.dir/lexer.o CMakeFiles/mybc.dir/parser-sem.o CMakeFiles/mybc.dir/vmachine.o  -o mybc 

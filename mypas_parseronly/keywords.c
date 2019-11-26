@@ -1,8 +1,10 @@
-//
-// Created by gabriel on 29/10/2019.
-//
-
-/*****@<keywords.h>::****/
+/*****@<keywords.h>::
+ * Authors:
+ * Grupo 1
+ * Gabriel Luiz
+ * Leonardo Cabbau
+ * Valeria
+ * ****/
 #include "include/keywords.h"
 
 /*******************************************************************************

@@ -1,8 +1,11 @@
 /***@<parser.c>::***/
 
 /*******************************************************************************
- * Author: Prof. Eraldo Pereira Marinho, Ph.D.
- * Local standard date: ter out 29 09:38:03 -03 2019
+ * Authors:
+ * Grupo 1
+ * Gabriel Luiz
+ * Leonardo Cabbau
+ * Valeria
  ******************************************************************************/
 
 #include <ctype.h>
@@ -686,7 +689,7 @@ type_t fact(type_t parent_type) {
         /***/
       } else if (lookahead == '(') {
         match('(');
-        exprlst(acctype);
+        exprlst();
         match(')');
 //        fprintf(varname)
       } else {

@@ -1,7 +1,11 @@
-//
-// Created by gabriel on 05/11/2019.
-//
-/****@<symtab.c>::*****/
+/****
+ * @<symtab.c>::
+ * Authors:
+ * Grupo 1
+ * Gabriel Luiz
+ * Leonardo Cabbau
+ * Valeria
+ * *****/
 
 #include "include/symtab.h"
 #include "include/lexer.h"
