@@ -396,7 +396,6 @@ type_t expr(type_t parent_type) {
 smpexpr:
             *Function made for verify the pattern of a sum expression.
     Pattern:
-    #todo NOT
             *smpexpr -> ['+'|'-'|NOT] term { OPLUS term }
 ****************************************************************************************/
 type_t smpexpr(type_t parent_type) {
@@ -441,15 +440,53 @@ isOPLUS:
     Pattern:
             *OPLUS = " + | - " | OR
 ****************************************************************************************/
+int adding = 0;
 int isOPLUS(void) {
+  /***/
+  switch (adding) {
+    case 1:
+      fprintf(object, "\taddl %%eax, (%%esp)\n");
+      fprintf(object, "\tpopl %%eax\n");
+      adding=0;
+      break;
+    case 2:
+      fprintf(object, "\tsubl %%eax, (%%esp)\n");
+      fprintf(object, "\tpopl %%eax\n");
+      adding=0;
+      break;
+    case 3:
+    case 4:
+      adding=0;
+      break;
+  }
+  /***/
   switch (lookahead) {
     case '+':
+      /***/
+      if(adding == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        adding=1;
+      }
+      /***/
       return '+';
     case '-':
+      /***/
+      if(adding == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        adding=2;
+      }
+      /***/
       return '-';
     case OR:
+      /***/
+      if(adding == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        adding=3;
+      }
+      /***/
       return OR;
     default:
+      adding=4;
       return 0;
   }
 }
@@ -485,19 +522,75 @@ isOTIMES:
     Pattern:
             *OTIMES = " * | / " | DIV | MOD | AND
 ****************************************************************************************/
+int mul = 0;
 int isOTIMES(void) {
+  /***/
+  switch (mul) {
+    case 1:
+      fprintf(object, "\timull (%%esp)\n");
+      fprintf(object, "\taddl $4, %%esp\n");
+      mul=0;
+      break;
+    case 2:
+      fprintf(object, "\tpop %%eax\n");
+      fprintf(object, "\tcltd\n");
+      fprintf(object, "\tidivl %%ecx\n");
+      mul=0;
+      break;
+    case 3:
+//      fprintf(object, "\tsubl %%eax, (%%esp)\n");
+      mul=0;
+      break;
+    case 4:
+    case 5:
+    case 6:
+      mul = 0;
+      break;
+  }
+  /***/
   switch (lookahead) {
     case '*':
+      /***/
+      if(mul == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        mul=1;
+      }
+      /***/
       return '*';
     case '/':
+      /***/
+      if(mul == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        mul=2;
+      }
+      /***/
       return '/';
     case DIV:
+      /***/
+      if(mul == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        mul=3;
+      }
+      /***/
       return DIV;
     case MOD:
+      /***/
+      if(mul == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        mul=4;
+      }
+      /***/
       return MOD;
     case AND:
+      /***/
+      if(mul == 0) {
+        fprintf(object, "\tpushl %%eax\n");
+        mul=5;
+      }
+      /***/
       return AND;
     default:
+      mul=6;
       return 0;
   }
 }
@@ -539,7 +632,7 @@ type_t fact(type_t parent_type) {
   /***/
   int var_descr;
   type_t var_type;
-  type_t  expr_type;
+  type_t expr_type;
 
   type_t acctype;
   /***/
@@ -548,55 +641,45 @@ type_t fact(type_t parent_type) {
   switch (lookahead) {
     case UINT:
       /***/
-      //todo verificar se é 1 ou 2 comparar pelo tamanho da string com o maior de 32
-//      printf("selected uint type: %d", checKUint());
-//      acctype = MAX(parent_type, checKUint());
-//      printf("selected uint type: %f", atof(lexeme));
-      acctype = MAX(parent_type, 2);
+      acctype = MAX(parent_type, checKUint());
       /***/
       match(lookahead);
       break;
     case FLT:
       /***/
-//      3 ou 4
-      //todo verificar o tipo se é ponto flutuante ou simples usar lexeme fazer comparação verificar se é 32 bits ou 64 bits ver a faixa olhar precisão ou a faixa de expoente OLHAR NA INTERNET
-//      printf("selected flt type: %d", checkFlt());
-//      acctype = MAX(parent_type, checkFlt());
-//      printf("selected flt type: %f", atof(lexeme));
-      acctype = MAX(parent_type, 4);
+      acctype = MAX(parent_type, checkFlt());
       /***/
       match(lookahead);
       break;
     case CHR:
-//      /***/
-//      acctype = MAX(parent_type, 6);
-//      /***/
+      /***/
+      acctype = MAX(parent_type, 6);
+      /***/
       match(CHR);
       break;
     case STR:
-//      /***/
-//      acctype = MAX(parent_type, 7);
-//      /***/
+      /***/
+      acctype = MAX(parent_type, 7);
+      /***/
       match(STR);
       break;
     case TRUE:
-//      /***/
-//      acctype = MAX(parent_type, 5);
-//      /***/
+      /***/
+      acctype = MAX(parent_type, 5);
+      /***/
       match(TRUE);
       break;
     case FALSE:
-//      /***/
-//      acctype = MAX(parent_type, 5);
-//      /***/
+      /***/
+      acctype = MAX(parent_type, 5);
+      /***/
       match(FALSE);
       break;
     case ID:
       /***/
       acctype = symtab[var_descr = symtab_lookup(lexeme)].typedescriptor;
+      fprintf(object, "\tmovl %s, %%eax\n", lexeme);
       /***/
-//      acctype
-//      var_type
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
@@ -606,7 +689,7 @@ type_t fact(type_t parent_type) {
         /***/
       } else if (lookahead == '(') {
         match('(');
-        exprlst();
+        exprlst(acctype);
         match(')');
 //        fprintf(varname)
       } else {
@@ -622,23 +705,22 @@ type_t fact(type_t parent_type) {
   return MAX(acctype, parent_type);
 }
 
-//type_t checKUint() {
-//  double value = atof(lexeme);
-//  printf("\n uint %f", value);
-//  if (value > -32768 && value < 32767) return 1;
-//  return 2;
-//}
-//
-//type_t checkFlt() {
-//  //5.0E-324 .. 1.7E308
-//  char * min = "5.0E-324";
-//  float value = strtof(lexeme, NULL);
-//  printf("\n float %f \n", value);
-//  if(value >  strtof(min, NULL) && value < strtof("1.7E308", NULL)) {
-//    return 4;
-//  }
-//  return 3;
-//}
+type_t checKUint() {
+  double value = atof(lexeme);
+  if (value >= -32768 && value <= 32767) {
+    return 1;
+  }
+  return 2;
+}
+
+type_t checkFlt() {
+  char *min = "1.5E-45";
+  float value = strtof(lexeme, NULL);
+  if (value >= strtof(min, NULL) && value <= strtof("3.4E38", NULL)) {
+    return 3;
+  }
+  return 4;
+}
 
 /*
  * @ isNUM::

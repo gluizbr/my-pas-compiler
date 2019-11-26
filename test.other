@@ -71,6 +71,7 @@ end.
     popl %eax
     cltd
     idivl %ecx
+
 # y / z -> %eax
 # y % z -> %edx
     subl %eax, (%esp)

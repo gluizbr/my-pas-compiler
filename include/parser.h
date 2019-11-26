@@ -29,8 +29,8 @@ type_t fact(type_t parent_type);
 int isOTIMES(void);
 int isNUM(void);
 
-//type_t checKUint();
-//type_t checkFlt();
+type_t checKUint();
+type_t checkFlt();
 int isNEG(void);
 
 void match(token_t expected);

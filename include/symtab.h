@@ -3,7 +3,7 @@
 //
 /****@<symtab.h>::*****/
 #pragma once
-#todo check MAXSYMTAB definition
+//#todo check MAXSYMTAB definition
 //#define MAXSYMTAB 0x100000000
 #define MAXSYMTAB 1000000
 #include "lexer.h"

@@ -1,11 +1,13 @@
 {
   isto e um codigo teste,  sintaticamente aceito pelo parser
+
+  if (x > y) then
+          x := 1 + 2 * y
+      else
+          x := 1 + 2 / y
 }
 
 var x,y : real;
 begin
-    if (x > y) then
-        x := x + 2 * y
-    else
-        x := x + 2 / y
+    (x - y / z)
 end.
