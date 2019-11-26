@@ -2,12 +2,12 @@
   isto e um codigo teste,  sintaticamente aceito pelo parser
 
   if (x > y) then
-          x := 1 + 2 * y
-      else
-          x := 1 + 2 / y
+      x := 1 + 2 * y
+  else
+      x := 1 + 2 / y
 }
 
 var x,y : real;
 begin
-    (x - y / z)
+    (x + y)
 end.
