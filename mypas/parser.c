@@ -686,7 +686,7 @@ type_t fact(type_t parent_type) {
         /***/
       } else if (lookahead == '(') {
         match('(');
-        exprlst(acctype);
+        exprlst();
         match(')');
 //        fprintf(varname)
       } else {
