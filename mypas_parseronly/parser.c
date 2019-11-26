@@ -12,11 +12,8 @@
 #include "include/parser.h"
 #include "include/lexer.h"
 #include "include/main.h"
-#include "include/symtab.h"
-#include "include/default.h"
 
 token_t lookahead;
-int symtab_descriptor;
 char lexeme[MAXIDLEN + 1];
 
 /*******************************************************************************
@@ -26,7 +23,7 @@ char lexeme[MAXIDLEN + 1];
 
  mypas: initial nonterminal symbol
 
- mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope procdecl stmblock '.'
+ mypas -> [ PROGRAM ID '(' input ',' output ')' ';' ] declscope stmblock '.'
 *******************************************************************************/
 void mypas(void) {
   if (lookahead == PROGRAM) {
@@ -41,14 +38,12 @@ void mypas(void) {
   }
 
   declscope();
-  procdecl();
   stmblock();
   match('.');
 }
 
-/**/ int symtab_initial, symtab_final; /**/
 /*
- * @ declscope::
+ * @ declscope:: 
  */
 /**************************************************************************************
 declscope:
@@ -59,26 +54,16 @@ declscope:
 void declscope(void) {
   while (lookahead == VAR) {
     match(VAR);
-    /***/
-    symtab_initial = symtab_descriptor;
-    /***/
     varlst();
-    /***/
-    symtab_final = symtab_descriptor;
-    /***/
     match(':');
     vartype();
     match(';');
   }
+  procdecl();
 }
 
-/******************
-varlst -> ID { ',' ID }
-*/
-int fatalerrcount = 0;
-/**/char *varname/**/;
 /*
- * @ varlst::
+ * @ varlst:: 
  */
 /**************************************************************************************
 varlst:
@@ -86,19 +71,8 @@ varlst:
     Pattern:
             *varlst -> ID { ',' ID }
 ****************************************************************************************/
-void varlst(void) {
+void  varlst(void) {
   _varlst:
-  /************* a variable must be registered *********/
-  /**/
-  if (symtab_lookup(lexeme)) {
-    /********** symbol arread declared *******/
-    fatalerrcount++;
-//    TODO criar isCompact(t1, t2) -> para checkar se é compativel na hora de fazer a comparação
-  } else {
-    /********** append new symbol on table ***********/
-    symtab_append(lexeme);
-  }
-  /**/
   match(ID);
   if (lookahead == ',') {
     match(',');
@@ -107,7 +81,7 @@ void varlst(void) {
 }
 
 /*
- * @ vartype::
+ * @ vartype:: 
  */
 /**************************************************************************************
 varlst:
@@ -126,52 +100,31 @@ varlst:
 void vartype(void) {
   switch (lookahead) {
     case INTEGER:
-      /***/
-      symtab_type_range(1);
-      /***/
       match(INTEGER);
       break;
     case LONG:
-      /***/
-      symtab_type_range(2);
-      /***/
       match(LONG);
       break;
     case REAL:
-      /***/
-      symtab_type_range(3);
-      /***/
       match(REAL);
       break;
     case DOUBLE:
-      /***/
-      symtab_type_range(4);
-      /***/
       match(DOUBLE);
       break;
     case BOOLEAN:
-      /***/
-      symtab_type_range(5);
-      /***/
       match(BOOLEAN);
       break;
     case CHAR:
-      /***/
-      symtab_type_range(6);
-      /***/
       match(CHAR);
       break;
     default:
-      /***/
-      symtab_type_range(7);
-      /***/
       match(STRING);
       break;
   }
 }
 
 /*
- * @ procdecl::
+ * @ procdecl:: 
  */
 /**************************************************************************************
 procdecl:
@@ -218,7 +171,7 @@ void parmdef(void) {
 }
 
 /*
- * @ stmblock::
+ * @ stmblock:: 
  */
 /**************************************************************************************
 stmblock:
@@ -233,7 +186,7 @@ void stmblock(void) {
 }
 
 /*
- * @ stmlst::
+ * @ stmlst:: 
  */
 /**************************************************************************************
 stmlst:
@@ -250,7 +203,7 @@ void stmlst(void) {
 }
 
 /*
- * @ stmt::
+ * @ stmt:: 
  */
 /**************************************************************************************
 stmt:
@@ -273,12 +226,12 @@ void stmt(void) {
       repstm();
       break;
     default:
-      fact(0);
+      fact();
   }
 }
 
 /*
- * @ ifstm::
+ * @ ifstm:: 
  */
 /**************************************************************************************
 ifstm:
@@ -286,34 +239,19 @@ ifstm:
     Pattern:
             *ifstm -> IF expr THEN stmt [ ELSE stmt ]
 ****************************************************************************************/
-/***/
-  int lblcount = 1;
-/***/
 void ifstm(void) {
   match(IF);
-  expr(0);
-  /***/
-  int lblendif, lblelse;
-  fprintf(object, "\tjz .L%d\n", lblendif = lblelse = lblcount++);
-  /***/
-
+  expr();
   match(THEN);
   stmt();
   if (lookahead == ELSE) {
-    /***/
-    fprintf(object, "\tjmp .L%d\n", lblendif = lblcount++);
-    fprintf(object, "\t.L%d:\n", lblelse);
-    /***/
     match(ELSE);
     stmt();
   }
-  /***/
-  fprintf(object, "\t.L%d:\n", lblendif);
-  /***/
 }
 
 /*
- * @ whilestm::
+ * @ whilestm:: 
  */
 /**************************************************************************************
 whilestm:
@@ -322,27 +260,14 @@ whilestm:
             *whilestm -> WHILE expr DO stmt
 ****************************************************************************************/
 void whilestm(void) {
-  /***/
-  int lblwhile, lblwend;
-  /***/
   match(WHILE);
-  /***/
-  fprintf(object, ".L%d:\n", lblwhile = lblcount++);
-  /***/
-  expr(0);
-  /***/
-  fprintf(object, "\tjz .L%d\n", lblwend = lblcount++);
-  /***/
+  expr();
   match(DO);
   stmt();
-  /***/
-  fprintf(object, "\tjmp .L%d\n", lblwhile);
-  fprintf(object, ".L%d:\n", lblwend);
-  /***/
 }
 
 /*
- * @ repstm::
+ * @ repstm:: 
  */
 /**************************************************************************************
 repstm:
@@ -351,23 +276,14 @@ repstm:
             *repstm -> REPEAT stmlst UNTIL expr
 ****************************************************************************************/
 void repstm(void) {
-  /***/
-  int lblrepeat;
-  /***/
   match(REPEAT);
-  /***/
-  fprintf(object, ".L%d:\n", lblrepeat = lblcount++);
-  /***/
   stmlst();
   match(UNTIL);
-  expr(0);
-  /***/
-  fprintf(object, "\tjz .L%d\n", lblrepeat);
-  /***/
+  expr();
 }
 
 /*
- * @ expr::
+ * @ expr:: 
  */
 /**************************************************************************************
 expr:
@@ -375,64 +291,37 @@ expr:
     Pattern:
             *expr -> smpexpr [ RELOP smpexpr ]
 ****************************************************************************************/
-type_t expr(type_t parent_type) {
-  /***/
-  type_t t1, t2 = 0;
-  /***/
-  t1 = smpexpr(parent_type);
+void expr(void) {
+  smpexpr();
   if (lookahead == '<' || lookahead == NEQ || lookahead == LEQ || lookahead == '=' || lookahead == GEQ ||
       lookahead == '>') {
     match(lookahead);
-    t2 = smpexpr(MAX(t1, parent_type));
+    smpexpr();
   }
-  if (t2) return t2;
-  return t1;
 }
 
 /*
- * @ smpexpr::
+ * @ smpexpr:: 
  */
 /**************************************************************************************
 smpexpr:
             *Function made for verify the pattern of a sum expression.
     Pattern:
-            *smpexpr -> ['+'|'-'|NOT] term { OPLUS term }
+            *smpexpr -> ['+'|'-'] term { OPLUS term }
 ****************************************************************************************/
-type_t smpexpr(type_t parent_type) {
-  /***/
-  type_t acctype = 0;
-  /***/
-  if (isNEG()) {
+void smpexpr(void) {
+  if (lookahead == '+' || lookahead == '-') {
     match(lookahead);
   }
-  _term:
-  parent_type = MAX(parent_type, acctype);
-  acctype = term(parent_type);
-  if (isOPLUS()) {
+  term();
+  while (isOPLUS()) {
     match(lookahead);
-    goto _term;
-  }
-}
-
-/**************************************************************************************
-isNEG:
-      isNEG -> ['+'|'-'|NOT]
-****************************************************************************************/
-int isNEG(void) {
-  switch (lookahead) {
-    case '+':
-      return '+';
-    case '-':
-      return '-';
-    case NOT:
-      return NOT;
-    default:
-      return 0;
+    term();
   }
 }
 
 /*
- * @ isOPLUS::
+ * @ isOPLUS:: 
  */
 /**************************************************************************************
 isOPLUS:
@@ -440,59 +329,21 @@ isOPLUS:
     Pattern:
             *OPLUS = " + | - " | OR
 ****************************************************************************************/
-int adding = 0;
 int isOPLUS(void) {
-  /***/
-  switch (adding) {
-    case 1:
-      fprintf(object, "\taddl %%eax, (%%esp)\n");
-      fprintf(object, "\tpopl %%eax\n");
-      adding=0;
-      break;
-    case 2:
-      fprintf(object, "\tsubl %%eax, (%%esp)\n");
-      fprintf(object, "\tpopl %%eax\n");
-      adding=0;
-      break;
-    case 3:
-    case 4:
-      adding=0;
-      break;
-  }
-  /***/
   switch (lookahead) {
     case '+':
-      /***/
-      if(adding == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        adding=1;
-      }
-      /***/
       return '+';
     case '-':
-      /***/
-      if(adding == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        adding=2;
-      }
-      /***/
       return '-';
     case OR:
-      /***/
-      if(adding == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        adding=3;
-      }
-      /***/
       return OR;
     default:
-      adding=4;
       return 0;
   }
 }
 
 /*
- * @ term::
+ * @ term:: 
  */
 /**************************************************************************************
 term:
@@ -500,21 +351,16 @@ term:
     Pattern:
             *term -> fact { OTIMES fact }
 ****************************************************************************************/
-type_t term(type_t parent_type) {
-  /***/
-  type_t acctype = 0;
-  /***/
-  _fact:
-  parent_type = MAX(parent_type, acctype);
-  acctype = fact(parent_type);
-  if (isOTIMES()) {
+void term(void) {
+  fact();
+  while (isOTIMES()) {
     match(lookahead);
-    goto _fact;
+    fact();
   }
 }
 
 /*
- * @ isOTIMES::
+ * @ isOTIMES:: 
  */
 /**************************************************************************************
 isOTIMES:
@@ -522,96 +368,25 @@ isOTIMES:
     Pattern:
             *OTIMES = " * | / " | DIV | MOD | AND
 ****************************************************************************************/
-int mul = 0;
 int isOTIMES(void) {
-  /***/
-  switch (mul) {
-    case 1:
-      fprintf(object, "\timull (%%esp)\n");
-      fprintf(object, "\taddl $4, %%esp\n");
-      mul=0;
-      break;
-    case 2:
-      fprintf(object, "\tpop %%eax\n");
-      fprintf(object, "\tcltd\n");
-      fprintf(object, "\tidivl %%ecx\n");
-      mul=0;
-      break;
-    case 3:
-//      fprintf(object, "\tsubl %%eax, (%%esp)\n");
-      mul=0;
-      break;
-    case 4:
-    case 5:
-    case 6:
-      mul = 0;
-      break;
-  }
-  /***/
   switch (lookahead) {
     case '*':
-      /***/
-      if(mul == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        mul=1;
-      }
-      /***/
       return '*';
     case '/':
-      /***/
-      if(mul == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        mul=2;
-      }
-      /***/
       return '/';
     case DIV:
-      /***/
-      if(mul == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        mul=3;
-      }
-      /***/
       return DIV;
     case MOD:
-      /***/
-      if(mul == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        mul=4;
-      }
-      /***/
       return MOD;
     case AND:
-      /***/
-      if(mul == 0) {
-        fprintf(object, "\tpushl %%eax\n");
-        mul=5;
-      }
-      /***/
       return AND;
     default:
-      mul=6;
       return 0;
   }
 }
 
-/********************
-   * EBNF:
-   * exprlist -> expr { ',' expr }
-   *
-   */
-   //*todo modificar tem que ter uma variavel
-void exprlst(void) {
-  _expr:
-  expr(0);
-  if (lookahead == ',') {
-    match(',');
-    goto _expr;
-  }
-}
-
 /*
- * @ fact::
+ * @ fact:: 
  */
 /**************************************************************************************
 fact:
@@ -625,102 +400,41 @@ fact:
                       | FALSE
                       | ID [ ":=" expr ]
 ****************************************************************************************/
-type_t fact(type_t parent_type) {
-
-  /***/
-  int var_descr;
-  type_t var_type;
-  type_t expr_type;
-
-  type_t acctype;
-  /***/
-//todo while, if, etc colocar 0 só por em quanto
+void fact(void) {
   switch (lookahead) {
     case UINT:
-      /***/
-      acctype = MAX(parent_type, checKUint());
-      /***/
-      match(lookahead);
-      break;
     case FLT:
-      /***/
-      acctype = MAX(parent_type, checkFlt());
-      /***/
       match(lookahead);
       break;
     case CHR:
-      /***/
-      acctype = MAX(parent_type, 6);
-      /***/
       match(CHR);
       break;
     case STR:
-      /***/
-      acctype = MAX(parent_type, 7);
-      /***/
       match(STR);
       break;
     case TRUE:
-      /***/
-      acctype = MAX(parent_type, 5);
-      /***/
       match(TRUE);
       break;
     case FALSE:
-      /***/
-      acctype = MAX(parent_type, 5);
-      /***/
       match(FALSE);
       break;
     case ID:
-      /***/
-      acctype = symtab[var_descr = symtab_lookup(lexeme)].typedescriptor;
-      fprintf(object, "\tmovl %s, %%eax\n", lexeme);
-      /***/
       match(ID);
       if (lookahead == ASSGN) {
         match(ASSGN);
-        //todo validar se é compativel
-        /***/
-        acctype = expr(parent_type);
-        /***/
-      } else if (lookahead == '(') {
-        match('(');
-        exprlst(acctype);
-        match(')');
-//        fprintf(varname)
-      } else {
-//        fprintf(object, , varname);
+        expr();
       }
       break;
     default:
       match('(');
-      acctype = expr(parent_type);
+      expr();
       match(')');
       break;
   }
-  return MAX(acctype, parent_type);
-}
-
-type_t checKUint() {
-  double value = atof(lexeme);
-  if (value >= -32768 && value <= 32767) {
-    return 1;
-  }
-  return 2;
-}
-
-type_t checkFlt() {
-  char *min = "1.5E-45";
-  float value = strtof(lexeme, NULL);
-  if (value >= strtof(min, NULL) && value <= strtof("3.4E38", NULL)) {
-    return 3;
-  }
-  return 4;
 }
 
 /*
- * @ isNUM::
+ * @ isNUM:: 
  */
 /**************************************************************************************
 isNUM:
@@ -740,7 +454,7 @@ int isNUM(void) {
 }
 
 /*
- * @ match::
+ * @ match:: 
  */
 /**************************************************************************************
 match:

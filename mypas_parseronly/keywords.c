@@ -35,7 +35,6 @@ char *keyword[] = {
     "and",
     "false",
     "true",
-    "not",
     "end",
 };
 

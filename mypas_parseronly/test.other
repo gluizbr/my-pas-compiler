@@ -25,7 +25,7 @@ program test (input, output);
           while (n < 2) do
             x := 1
       end
-
+        
   begin
       write;
       repeat x:= 1 until (n <= 2)
@@ -33,4 +33,4 @@ program test (input, output);
 
 begin
     test_proc
-end.
+end. 

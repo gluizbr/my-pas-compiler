@@ -7,18 +7,14 @@
 
 /*******************************************************************************
  Syntax for simplified / modified Pascal, namely MyPas Project
-
  EBNF Grammar
  mypas: initial nonterminal symbol
-
  mypas -> [ PROGRAM ID (input ',' output) ';' ] declscope stmblock '.'
  input -> ID
  output -> ID
  input, output: standard buffer handlers
-
 --------------------------------------------------------------------------------
 declscope: declarative scope
-
 declscope -> VAR varlst ':' vartype ';' { VAR varlst ':' vartype ';' } procdecl
 varlst -> ID { ',' ID }
 vartype -> INT | LONG | REAL | DOUBLE | BOOLEAN | CHAR | STRING
@@ -27,21 +23,17 @@ procdecl -> { PROCEDURE ID parmdef ';' declscope stmblock |
 parmdef -> [ '(' [VAR] varlst ':' vartype { ';' [VAR] varlst ':' vartype }  ')' ]
 stmblock -> BEGIN stmtlst END
 stmlst -> stmt { ';' stmt }
-
 -------------------------------------------------------------------------------
 stmt: statement definitions
-
 stmt -> stmblock | ifstm | whilestm | repstm | fact
 ifstm -> IF expr THEN stmt [ ELSE stmt ]
 whilestm -> WHILE expr DO stmt
 repstm -> REPEAT stmlst UNTIL expr
-
 -------------------------------------------------------------------------------
 expr: the top expression case, which can be either simple logic-arithmetic or
       relational
 expr -> smpexpr [ RELOP smpexpr ]
 RELOP = "< | <> | <= | = | >= | >"
-
 smpexpr -> ['+'|'-'] term { OPLUS term }
 OPLUS = " + | - " | OR
 term -> fact { OTIMES fact }
@@ -57,8 +49,7 @@ NUM = UINT | FLT
 CHR = \'[0x00-0xFF]\' (ASCII)
 STR = \"CHR*\"
 ID = [A-Za-z][A-Za-z0-9_]*
-
-Notes::
+Notes:: 
  1. low case variable means nonterminals whereas upper case means tokens, or
  terminal symbols. Of course, explicit ASCII characters are standard terminals;
  2. this is not Pascal, neither C.
