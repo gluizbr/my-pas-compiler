@@ -625,8 +625,6 @@ fact:
                       | FALSE
                       | ID [ ":=" expr ]
 ****************************************************************************************/
-
-
 type_t fact(type_t parent_type) {
 
   /***/
@@ -637,7 +635,6 @@ type_t fact(type_t parent_type) {
   type_t acctype;
   /***/
 //todo while, if, etc colocar 0 só por em quanto
-
   switch (lookahead) {
     case UINT:
       /***/
